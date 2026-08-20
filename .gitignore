@@ -12,11 +12,17 @@
 
 # testing
 /coverage
+/tmp/
+
+# local Python environment
+/.venv/
 
 # next.js
 /.next/
-/.vinext/
 /out/
+
+# production
+/build
 
 # misc
 .DS_Store
@@ -34,7 +40,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-/dist/
-/.wrangler/
-/outputs/
-/work/
+# typescript
+*.tsbuildinfo
+next-env.d.ts

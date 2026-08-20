@@ -1,5 +1,5 @@
-import { OperatingSoni } from "@/components/os/OperatingSoni";
+import { OperatingSystem } from "@/components/os/OperatingSystem";
 
 export default function Home() {
-  return <OperatingSoni />;
+  return <OperatingSystem />;
 }

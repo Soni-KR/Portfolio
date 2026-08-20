@@ -13,20 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OperatingSoni-KR — Mourad Kraiem",
-  description: "An interactive operating-system portfolio by Mourad Kraiem.",
+  title: "OperatingSoni-KR // Mourad Kraiem",
+  description:
+    "Mourad Kraiem's retro-computing portfolio operating environment.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }
