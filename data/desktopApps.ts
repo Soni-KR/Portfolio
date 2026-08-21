@@ -28,7 +28,7 @@ export const desktopApps: DesktopApp[] = [
     id: "research",
     label: "Research",
     showOnDesktop: true,
-    defaultSize: { width: 720, height: 560 },
+    defaultSize: { width: 640, height: 500 },
   },
   {
     id: "achievements",

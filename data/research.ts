@@ -3,11 +3,11 @@ export type ResearchRecord = {
   title: string;
   organization: string;
   period: string;
-  status: "Published" | "Research project";
+  status: "Published" | "Ongoing research";
   overview: string;
   methodology: string[];
   result?: string;
-  projectId: string;
+  projectId?: string;
   repositoryUrl?: string;
   publicationUrl?: string;
 };
@@ -34,33 +34,46 @@ export const research: ResearchRecord[] = [
       "https://www.sciencedirect.com/science/article/abs/pii/S0169023X26000832",
   },
   {
-    id: "graph-rag-arabic-medical-qa",
-    title: "Explainable Graph-RAG for Arabic Medical QA",
+    id: "mg-retriever",
+    title: "MG-Retriever",
     organization: "LARODEC Laboratory",
     period: "07/2026 - 08/2026",
-    status: "Research project",
+    status: "Ongoing research",
     overview:
-      "An explainable Arabic medical question-answering system focused on traceable retrieval and evidence provenance.",
+      "An explainable Graph-RAG retrieval system for Arabic medical question answering, designed around traceable evidence and provenance.",
     methodology: [
       "Knowledge-graph retrieval",
       "Multilingual embeddings",
       "Hybrid lexical, vector, and graph search",
     ],
-    projectId: "graph-rag-arabic-medical-qa",
   },
   {
-    id: "edge-fog-cloud-digital-twin",
-    title: "Edge-Fog-Cloud Digital Twin and Federated Learning",
-    organization: "Research Internship in Smart Agriculture",
-    period: "07/2026 - 08/2026",
-    status: "Research project",
+    id: "d-mode",
+    title: "D-MODE",
+    organization: "PCDent research track",
+    period: "Ongoing",
+    status: "Ongoing research",
     overview:
-      "A distributed smart-agriculture architecture for federated yield prediction across fog nodes and a coordinating cloud layer.",
+      "A dental-image analysis architecture combining foundation-model features, object detection, and mask prediction inside the PCDent research track.",
+    methodology: [
+      "DINOv2 visual feature extraction",
+      "RT-DETR object detection",
+      "Dedicated mask-prediction head",
+    ],
+    projectId: "pcdent",
+  },
+  {
+    id: "federated-edge-fog-cloud",
+    title: "Federated Learning / Edge-Fog-Cloud Research",
+    organization: "Smart-agriculture research internship",
+    period: "07/2026 - 08/2026",
+    status: "Ongoing research",
+    overview:
+      "A distributed smart-agriculture architecture for federated yield prediction across edge and fog nodes with cloud coordination and digital-twin modeling.",
     methodology: [
       "Federated learning across distributed fog nodes",
       "Cloud aggregation and model redistribution",
-      "Digital-twin architecture",
+      "Edge-fog-cloud digital-twin architecture",
     ],
-    projectId: "edge-fog-cloud-digital-twin",
   },
 ];

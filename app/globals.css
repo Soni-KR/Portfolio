@@ -819,6 +819,20 @@ button {
   width: 8.5%;
   height: 48%;
   transform: none;
+  touch-action: manipulation;
+}
+
+.avatar-station-dragging {
+  z-index: 12;
+  filter: brightness(1.12) drop-shadow(0 0 14px rgba(97, 214, 214, 0.28));
+}
+
+.avatar-station-dragging .lab-avatar {
+  animation-play-state: paused;
+}
+
+.avatar-station-dragging .avatar-nameplate {
+  color: var(--os-signal);
 }
 
 .avatar-station::before { inset: -4px; height: auto; border-radius: 0.35rem; background: linear-gradient(115deg, transparent 38%, rgba(244, 184, 96, 0.08) 50%, transparent 62%); box-shadow: none; }
@@ -1462,6 +1476,36 @@ button {
   border: 1px solid rgba(97, 214, 214, 0.18);
   background: rgba(9, 26, 32, 0.72);
   padding: 1rem;
+}
+
+.certification-record {
+  border: 1px solid rgba(97, 214, 214, 0.14);
+  background:
+    linear-gradient(135deg, rgba(97, 214, 214, 0.06), transparent 56%),
+    rgba(9, 26, 32, 0.64);
+  padding: 0.85rem;
+}
+
+.certification-record > div {
+  color: rgba(207, 250, 254, 0.32);
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.certification-record h5 {
+  margin-top: 0.65rem;
+  color: rgba(236, 254, 255, 0.84);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.certification-record > p {
+  margin-top: 0.4rem;
+  color: rgba(244, 184, 96, 0.58);
+  font-size: 0.62rem;
+  line-height: 1.4;
 }
 
 .app-loading {

@@ -6,12 +6,12 @@ Visitors enter through a short boot sequence and arrive at a desktop where portf
 
 ## Experience
 
-- Full-screen retro AI-lab wallpaper with seven interactive objects, parallax, lighting, and day/night states
-- Photo-derived Mourad companion with distinct idle, working, and excited poses
+- Full-screen retro workspace centered on anime, gaming, football, and AI/ML, with seven interactive objects, parallax, lighting, and day/night states
+- Draggable photo-derived Mourad companion with distinct idle, working, and excited poses
 - Double-click desktop navigation on computers and single-tap navigation on touch devices
 - Draggable desktop icons and status widget with versioned local persistence
-- Projects explorer with folders, complete project index, and detailed records
-- Research archive, interactive resume, profile, achievements, contact, and terminal apps
+- Project Drive organized into Featured, AI & Software, Federated & Distributed AI, Competitions & Kaggle, and Research-linked folders
+- Four-record Research Archive plus resume, profile, awards, verified certifications, contact, and terminal apps
 - `Ctrl/Cmd + K` command palette with keyboard navigation and record-level search
 - Optional synthesized system sounds, muted by default
 - Responsive mobile window mode and reduced-motion support

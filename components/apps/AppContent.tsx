@@ -28,7 +28,13 @@ const appRenderers: Record<AppId, (runtime: AppRuntime, targetId?: string) => Re
   about: () => <AboutApp />,
   achievements: () => <AchievementsApp />,
   contact: () => <ContactApp />,
-  projects: (_, targetId) => <ProjectsApp key={targetId ?? "projects"} initialProjectId={targetId} />,
+  projects: ({ onOpenApp }, targetId) => (
+    <ProjectsApp
+      key={targetId ?? "projects"}
+      initialProjectId={targetId}
+      onOpenResearch={(researchId) => onOpenApp("research", researchId)}
+    />
+  ),
   research: (_, targetId) => <ResearchApp key={targetId ?? "research"} initialResearchId={targetId} />,
   terminal: ({ onOpenApp, onResetDesktop }) => (
     <TerminalApp onOpenApp={onOpenApp} onResetDesktop={onResetDesktop} />

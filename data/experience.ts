@@ -1,21 +1,21 @@
 export const experience = [
   {
-    id: "graph-rag-arabic-medical-qa",
-    title: "Explainable Graph-RAG for Arabic Medical QA",
+    id: "mg-retriever",
+    title: "MG-Retriever",
     organization: "LARODEC Laboratory",
     period: "07/2026 - 08/2026",
     summary:
       "Built an explainable Arabic medical QA system combining knowledge graphs, multilingual embeddings, and hybrid lexical, vector, and graph retrieval with provenance-aware evidence selection.",
-    projectId: "graph-rag-arabic-medical-qa",
+    projectId: "mg-retriever",
   },
   {
-    id: "edge-fog-cloud-digital-twin",
-    title: "Edge-Fog-Cloud Digital Twin and Federated Learning",
+    id: "federated-edge-fog-cloud",
+    title: "Federated Learning / Edge-Fog-Cloud Research",
     organization: "Research Internship in Smart Agriculture",
     period: "07/2026 - 08/2026",
     summary:
       "Developed federated learning for yield prediction across distributed fog nodes, with cloud aggregation and redistribution inside a digital-twin architecture.",
-    projectId: "edge-fog-cloud-digital-twin",
+    projectId: "federated-mnist",
   },
   {
     id: "multi-agent-news-prediction",

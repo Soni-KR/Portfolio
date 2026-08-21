@@ -9,7 +9,13 @@ import {
   type PortfolioProject,
 } from "@/data/projects";
 
-function ProjectDetail({ project }: { project: PortfolioProject }) {
+function ProjectDetail({
+  project,
+  onOpenResearch,
+}: {
+  project: PortfolioProject;
+  onOpenResearch: (researchId: string) => void;
+}) {
   return (
     <article className="project-detail min-w-0">
       <header className="border-b border-cyan-300/15 pb-5">
@@ -72,7 +78,16 @@ function ProjectDetail({ project }: { project: PortfolioProject }) {
             View publication ↗
           </a>
         )}
-        {!project.repositoryUrl && !project.publicationUrl && (
+        {project.researchId && (
+          <button
+            type="button"
+            className="os-button px-4 py-2 text-xs"
+            onClick={() => onOpenResearch(project.researchId!)}
+          >
+            Open in Research Archive ↗
+          </button>
+        )}
+        {!project.repositoryUrl && !project.publicationUrl && !project.researchId && (
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/35">
             Portfolio record // public links not listed
           </p>
@@ -84,9 +99,10 @@ function ProjectDetail({ project }: { project: PortfolioProject }) {
 
 type ProjectsAppProps = {
   initialProjectId?: string;
+  onOpenResearch: (researchId: string) => void;
 };
 
-export function ProjectsApp({ initialProjectId }: ProjectsAppProps) {
+export function ProjectsApp({ initialProjectId, onOpenResearch }: ProjectsAppProps) {
   const initialProject =
     projects.find((project) => project.id === initialProjectId) ?? projects[0];
   const [folderId, setFolderId] = useState<string>(() => getFolderForProject(initialProject));
@@ -102,10 +118,10 @@ export function ProjectsApp({ initialProjectId }: ProjectsAppProps) {
   };
 
   return (
-    <div className="projects-explorer -m-4 min-h-full sm:-m-6 sm:grid sm:grid-cols-[12rem_minmax(15rem,0.8fr)_minmax(18rem,1.25fr)]">
+    <div className="projects-explorer -m-4 min-h-full sm:-m-6 sm:grid sm:grid-cols-[14.5rem_minmax(15rem,0.8fr)_minmax(18rem,1.25fr)]">
       <nav className="border-b border-cyan-300/15 bg-[#07161b] p-4 sm:border-b-0 sm:border-r" aria-label="Project folders">
         <p className="mb-3 text-[0.6rem] uppercase tracking-[0.24em] text-amber-200/70">
-          OSKR Drive / Work
+          Project Drive /
         </p>
         <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 sm:grid-cols-1">
           {projectFolders.map((folder) => (
@@ -160,7 +176,11 @@ export function ProjectsApp({ initialProjectId }: ProjectsAppProps) {
       </section>
 
       <div className="bg-[#07161b]/60 p-5 sm:p-6">
-        {selectedProject ? <ProjectDetail project={selectedProject} /> : <p>No records in this folder.</p>}
+        {selectedProject ? (
+          <ProjectDetail project={selectedProject} onOpenResearch={onOpenResearch} />
+        ) : (
+          <p>No records in this folder.</p>
+        )}
       </div>
     </div>
   );

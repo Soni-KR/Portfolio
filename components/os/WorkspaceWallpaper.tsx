@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { AppId } from "@/data/desktopApps";
 
 type CompanionMood = "idle" | "working" | "excited";
@@ -17,6 +17,11 @@ const avatarSources: Record<CompanionMood, string> = {
   working: "/avatar/mourad-working.webp",
   excited: "/avatar/mourad-excited.webp",
 };
+
+type AvatarPosition = { x: number; y: number };
+
+const defaultAvatarPosition: AvatarPosition = { x: 54.8, y: 34 };
+const avatarSize = { width: 8.5, height: 48 };
 
 function PixelMouradAvatar({ mood }: { mood: CompanionMood }) {
   return (
@@ -41,8 +46,17 @@ function PixelMouradAvatar({ mood }: { mood: CompanionMood }) {
 
 export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpaperProps) {
   const roomRef = useRef<HTMLElement>(null);
+  const avatarDrag = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    position: AvatarPosition;
+  } | null>(null);
+  const didDragAvatar = useRef(false);
   const [lightsOn, setLightsOn] = useState(true);
   const [skyMode, setSkyMode] = useState<"night" | "dawn">("night");
+  const [avatarPosition, setAvatarPosition] = useState(defaultAvatarPosition);
+  const [avatarDragging, setAvatarDragging] = useState(false);
 
   useEffect(() => {
     const room = roomRef.current;
@@ -52,6 +66,7 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
 
     let animationFrame = 0;
     const moveRoom = (event: PointerEvent) => {
+      if (room.dataset.avatarDragging === "true") return;
       window.cancelAnimationFrame(animationFrame);
       animationFrame = window.requestAnimationFrame(() => {
         const x = event.clientX / window.innerWidth - 0.5;
@@ -72,6 +87,63 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
 
   const open = (appId: AppId) => () => onOpenApp(appId);
 
+  const startAvatarDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (
+      event.button !== 0 ||
+      window.matchMedia("(pointer: coarse)").matches ||
+      !roomRef.current
+    ) {
+      return;
+    }
+
+    avatarDrag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      position: avatarPosition,
+    };
+    didDragAvatar.current = false;
+    roomRef.current.dataset.avatarDragging = "true";
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setAvatarDragging(true);
+  };
+
+  const moveAvatar = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const drag = avatarDrag.current;
+    const room = roomRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || !room) return;
+
+    const roomBounds = room.getBoundingClientRect();
+    const deltaX = ((event.clientX - drag.startX) / roomBounds.width) * 100;
+    const deltaY = ((event.clientY - drag.startY) / roomBounds.height) * 100;
+    if (Math.abs(deltaX) > 0.45 || Math.abs(deltaY) > 0.45) {
+      didDragAvatar.current = true;
+    }
+
+    setAvatarPosition({
+      x: Math.min(Math.max(drag.position.x + deltaX, 1), 99 - avatarSize.width),
+      y: Math.min(Math.max(drag.position.y + deltaY, 2), 98 - avatarSize.height),
+    });
+  };
+
+  const endAvatarDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (avatarDrag.current?.pointerId !== event.pointerId) return;
+    avatarDrag.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    if (roomRef.current) delete roomRef.current.dataset.avatarDragging;
+    setAvatarDragging(false);
+  };
+
+  const openAboutFromAvatar = () => {
+    if (didDragAvatar.current) {
+      didDragAvatar.current = false;
+      return;
+    }
+    onOpenApp("about");
+  };
+
   return (
     <section
       ref={roomRef}
@@ -82,7 +154,7 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
     >
       <div className="lab-room-canvas">
         <Image
-          src="/wallpaper/oskr-interactive-room.webp"
+          src="/wallpaper/oskr-interests-room-v2.webp"
           alt=""
           fill
           priority
@@ -103,6 +175,7 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
           <span>GRAPH-RAG</span>
           <span>RETRO//GAME</span>
           <span>ANIME//TECH</span>
+          <span>FOOTBALL//ML</span>
         </div>
 
         <button
@@ -168,10 +241,16 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
 
         <button
           type="button"
-          className="avatar-station room-hotspot hotspot-avatar"
-          data-hint="ABOUT MOURAD"
-          aria-label="Open About by selecting Mourad"
-          onClick={open("about")}
+          className={`avatar-station room-hotspot hotspot-avatar ${avatarDragging ? "avatar-station-dragging" : ""}`}
+          style={{ left: `${avatarPosition.x}%`, top: `${avatarPosition.y}%` }}
+          data-hint={avatarDragging ? "MOVING MOURAD" : "DRAG // ABOUT MOURAD"}
+          data-cursor={avatarDragging ? "Moving Mourad" : "Drag Mourad // Click for About"}
+          aria-label="Drag Mourad, or select him to open About"
+          onClick={openAboutFromAvatar}
+          onPointerDown={startAvatarDrag}
+          onPointerMove={moveAvatar}
+          onPointerUp={endAvatarDrag}
+          onPointerCancel={endAvatarDrag}
         >
           {message && <span className="lab-message">{message}</span>}
           <PixelMouradAvatar mood={mood} />
@@ -179,7 +258,7 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
         </button>
       </div>
 
-      <p className="scene-instructions">ROOM LINKS // 7 ACTIVE OBJECTS</p>
+      <p className="scene-instructions">ROOM LINKS // 7 ACTIVE OBJECTS // DRAG MOURAD</p>
     </section>
   );
 }

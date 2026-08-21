@@ -17,6 +17,9 @@
 # local Python environment
 /.venv/
 
+# private local portfolio evidence (certificates, photos, and notebooks)
+/pc switch/
+
 # next.js
 /.next/
 /out/

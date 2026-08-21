@@ -14,13 +14,13 @@ export function ResearchApp({ initialResearchId }: ResearchAppProps) {
   const selected = research.find((record) => record.id === selectedId) ?? research[0];
 
   return (
-    <div className="-m-4 min-h-full bg-[#07161b]/60 sm:-m-6 sm:grid sm:grid-cols-[16rem_1fr]">
+    <div className="-m-4 min-h-full bg-[#07161b]/60 sm:-m-6 sm:grid sm:grid-cols-[14rem_1fr]">
       <aside className="border-b border-cyan-300/15 bg-[#081a20] p-4 sm:border-b-0 sm:border-r">
         <p className="text-[0.6rem] uppercase tracking-[0.24em] text-amber-200/75">
-          Research Archive /
+          Research Archive / 04 records
         </p>
         <p className="mt-2 text-xs leading-5 text-cyan-100/40">
-          Published work and applied research records.
+          One publication and three ongoing research tracks.
         </p>
 
         <div className="mt-5 space-y-2">
@@ -35,7 +35,7 @@ export function ResearchApp({ initialResearchId }: ResearchAppProps) {
               <span className="document-glyph" aria-hidden="true" />
               <span className="min-w-0">
                 <span className="block text-left text-[0.58rem] uppercase tracking-[0.14em] text-cyan-100/35">
-                  DOC-{String(index + 1).padStart(2, "0")}{" // "}{record.status}
+                  {String(index + 1).padStart(2, "0")}{" // "}{record.status}
                 </span>
                 <span className="mt-1 block text-left text-xs font-semibold leading-5 text-cyan-50">
                   {record.title}
