@@ -3,9 +3,10 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { AppContent } from "@/components/apps/AppContent";
+import { CustomCursor } from "@/components/os/CustomCursor";
 import { DesktopIcon } from "@/components/os/DesktopIcon";
 import { DesktopItem } from "@/components/os/DesktopItem";
-import { PixelMourad, StatusWidget } from "@/components/os/DesktopWidgets";
+import { StatusWidget } from "@/components/os/DesktopWidgets";
 import {
   clampDesktopLayout,
   getDefaultDesktopLayout,
@@ -19,6 +20,7 @@ import { SystemBar } from "@/components/os/SystemBar";
 import { Taskbar } from "@/components/os/Taskbar";
 import { useSystemSound } from "@/components/os/useSystemSound";
 import { Window } from "@/components/os/Window";
+import { WorkspaceWallpaper } from "@/components/os/WorkspaceWallpaper";
 import { windowReducer } from "@/components/os/windowReducer";
 import { loadWindows, saveWindows } from "@/components/os/windowStorage";
 import {
@@ -129,6 +131,26 @@ export function Desktop() {
     };
     window.addEventListener("resize", keepDesktopInsideViewport);
     return () => window.removeEventListener("resize", keepDesktopInsideViewport);
+  }, []);
+
+  useEffect(() => {
+    const desktopMedia = window.matchMedia("(min-width: 901px)");
+    const dockStatusOnDesktopEntry = (event: MediaQueryListEvent) => {
+      if (!event.matches) return;
+      setLayout((current) => ({
+        ...current,
+        positions: {
+          ...current.positions,
+          "status-widget": {
+            x: Math.max(280, window.innerWidth - 292),
+            y: 82,
+          },
+        },
+      }));
+    };
+
+    desktopMedia.addEventListener("change", dockStatusOnDesktopEntry);
+    return () => desktopMedia.removeEventListener("change", dockStatusOnDesktopEntry);
   }, []);
 
   useEffect(() => {
@@ -263,7 +285,13 @@ export function Desktop() {
       <div className="wallpaper-orbit wallpaper-orbit-one" aria-hidden="true" />
       <div className="wallpaper-orbit wallpaper-orbit-two" aria-hidden="true" />
       <div className="wallpaper-wordmark" aria-hidden="true">SONI//KR</div>
+      <WorkspaceWallpaper
+        mood={companionMood}
+        message={companionMessage}
+        onOpenApp={openAppById}
+      />
       <div className="crt-overlay" aria-hidden="true" />
+      <p className="sr-only" aria-live="polite">{companionMessage}</p>
 
       <SystemBar
         soundEnabled={layout.soundEnabled}
@@ -305,15 +333,6 @@ export function Desktop() {
           <StatusWidget />
         </DesktopItem>
 
-        <DesktopItem
-          position={layout.positions["pixel-mourad"]}
-          width={176}
-          height={248}
-          className="desktop-item-companion"
-          onMove={(position) => moveDesktopItem("pixel-mourad", position)}
-        >
-          <PixelMourad mood={companionMood} message={companionMessage} />
-        </DesktopItem>
       </section>
 
       {windows.map((windowState) => (
@@ -339,7 +358,7 @@ export function Desktop() {
 
       {startMenuOpen && (
         <>
-          <button type="button" className="absolute inset-0 z-[2147483644] cursor-default" onClick={() => setStartMenuOpen(false)} aria-label="Close application launcher" />
+          <button type="button" className="absolute inset-0 z-[2147483644] cursor-default" onClick={() => setStartMenuOpen(false)} aria-label="Dismiss application launcher overlay" />
           <StartMenu apps={desktopApps} onOpenApp={openAppById} onOpenPalette={openPalette} onResetDesktop={resetDesktop} />
         </>
       )}
@@ -354,6 +373,7 @@ export function Desktop() {
         onToggleStartMenu={() => setStartMenuOpen((open) => !open)}
         onToggleWindow={toggleTaskbarWindow}
       />
+      <CustomCursor />
     </main>
   );
 }

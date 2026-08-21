@@ -80,7 +80,7 @@ export function Taskbar({
               onClick={() => onToggleWindow(windowState)}
               aria-label={`${
                 windowState.minimized ? "Restore" : isActive ? "Minimize" : "Focus"
-              } ${windowState.app.label} window`}
+              } ${windowState.app.label} from taskbar`}
             >
               <AppIcon appId={windowState.app.id} size="small" />
               <span className="truncate">{windowState.app.label}</span>

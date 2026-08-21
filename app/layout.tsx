@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/og.png",
+        url: "/og.jpg",
         width: 1731,
         height: 909,
         alt: "OperatingSoni-KR — Mourad Kraiem, AI and Machine Learning",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "OperatingSoni-KR // Mourad Kraiem",
     description,
-    images: ["/og.png"],
+    images: ["/og.jpg"],
   },
   robots: {
     index: true,

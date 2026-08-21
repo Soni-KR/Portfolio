@@ -1,4 +1,6 @@
-import type { KeyboardEvent } from "react";
+"use client";
+
+import { useState, type KeyboardEvent } from "react";
 import { AppIcon } from "@/components/os/AppIcon";
 import type { AppId } from "@/data/desktopApps";
 
@@ -9,6 +11,8 @@ type DesktopIconProps = {
 };
 
 export function DesktopIcon({ appId, label, onOpen }: DesktopIconProps) {
+  const [selected, setSelected] = useState(false);
+
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const isOpenKey = event.key === "Enter" || event.key === " ";
 
@@ -21,7 +25,10 @@ export function DesktopIcon({ appId, label, onOpen }: DesktopIconProps) {
   const openOnTouch = () => {
     if (window.innerWidth < 640 || window.matchMedia("(pointer: coarse)").matches) {
       onOpen();
+      return;
     }
+
+    setSelected(true);
   };
 
   return (
@@ -31,7 +38,10 @@ export function DesktopIcon({ appId, label, onOpen }: DesktopIconProps) {
       onClick={openOnTouch}
       onDoubleClick={onOpen}
       onKeyDown={handleKeyDown}
+      onBlur={() => setSelected(false)}
       aria-label={`Open ${label}`}
+      data-cursor={`Double click // ${label}`}
+      data-selected={selected ? "true" : "false"}
     >
       <AppIcon appId={appId} size="large" />
       <span className="desktop-icon-label">

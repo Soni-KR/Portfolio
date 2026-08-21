@@ -1,7 +1,7 @@
 import type { AppId } from "@/data/desktopApps";
 import { SYSTEM_BAR_HEIGHT, TASKBAR_HEIGHT } from "@/components/os/windowTypes";
 
-export type DesktopItemId = `app-${AppId}` | "status-widget" | "pixel-mourad";
+export type DesktopItemId = `app-${AppId}` | "status-widget";
 
 export type DesktopItemPosition = {
   x: number;
@@ -9,12 +9,12 @@ export type DesktopItemPosition = {
 };
 
 export type DesktopLayout = {
-  version: 1;
+  version: 3;
   positions: Record<DesktopItemId, DesktopItemPosition>;
   soundEnabled: boolean;
 };
 
-const STORAGE_KEY = "operating-soni-kr.desktop-layout.v1";
+const STORAGE_KEY = "operating-soni-kr.desktop-layout.v3";
 
 const itemSizes: Record<DesktopItemId, { width: number; height: number }> = {
   "app-projects": { width: 104, height: 104 },
@@ -25,12 +25,11 @@ const itemSizes: Record<DesktopItemId, { width: number; height: number }> = {
   "app-contact": { width: 104, height: 104 },
   "app-terminal": { width: 104, height: 104 },
   "status-widget": { width: 252, height: 148 },
-  "pixel-mourad": { width: 176, height: 248 },
 };
 
 export function getDefaultDesktopLayout(viewportWidth = 1280): DesktopLayout {
   return {
-    version: 1,
+    version: 3,
     soundEnabled: false,
     positions: {
       "app-projects": { x: 28, y: 82 },
@@ -41,7 +40,6 @@ export function getDefaultDesktopLayout(viewportWidth = 1280): DesktopLayout {
       "app-contact": { x: 140, y: 318 },
       "app-terminal": { x: 28, y: 436 },
       "status-widget": { x: Math.max(280, viewportWidth - 292), y: 82 },
-      "pixel-mourad": { x: Math.max(300, viewportWidth - 226), y: 272 },
     },
   };
 }
@@ -87,7 +85,7 @@ export function loadDesktopLayout(viewportWidth: number): DesktopLayout {
     const parsed: unknown = JSON.parse(serialized);
     if (typeof parsed !== "object" || parsed === null) return defaults;
     const record = parsed as Record<string, unknown>;
-    if (record.version !== 1 || typeof record.positions !== "object" || record.positions === null) {
+    if (record.version !== 3 || typeof record.positions !== "object" || record.positions === null) {
       return defaults;
     }
 
@@ -98,7 +96,7 @@ export function loadDesktopLayout(viewportWidth: number): DesktopLayout {
     }
 
     return {
-      version: 1,
+      version: 3,
       positions,
       soundEnabled: record.soundEnabled === true,
     };

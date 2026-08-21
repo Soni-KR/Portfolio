@@ -257,13 +257,13 @@ export function Window({
   const windowStyle: CSSProperties = windowState.minimized
     ? { display: "none" }
     : windowState.maximized
-      ? { inset: `${SYSTEM_BAR_HEIGHT}px 0 ${TASKBAR_HEIGHT}px 0`, zIndex: windowState.zIndex }
+      ? { inset: `${SYSTEM_BAR_HEIGHT}px 0 ${TASKBAR_HEIGHT}px 0`, zIndex: windowState.zIndex + 10 }
       : {
         left: windowState.position.x,
         top: windowState.position.y,
         width: windowState.size.width,
         height: windowState.size.height,
-        zIndex: windowState.zIndex,
+        zIndex: windowState.zIndex + 10,
       };
 
   return (
