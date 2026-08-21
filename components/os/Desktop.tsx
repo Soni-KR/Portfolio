@@ -1,34 +1,66 @@
 "use client";
 
-import { useEffect, useReducer, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { AppContent } from "@/components/apps/AppContent";
 import { DesktopIcon } from "@/components/os/DesktopIcon";
+import { DesktopItem } from "@/components/os/DesktopItem";
+import { PixelMourad, StatusWidget } from "@/components/os/DesktopWidgets";
+import {
+  clampDesktopLayout,
+  getDefaultDesktopLayout,
+  loadDesktopLayout,
+  saveDesktopLayout,
+  type DesktopItemId,
+  type DesktopItemPosition,
+} from "@/components/os/desktopLayoutStorage";
 import { StartMenu } from "@/components/os/StartMenu";
+import { SystemBar } from "@/components/os/SystemBar";
 import { Taskbar } from "@/components/os/Taskbar";
+import { useSystemSound } from "@/components/os/useSystemSound";
 import { Window } from "@/components/os/Window";
 import { windowReducer } from "@/components/os/windowReducer";
 import { loadWindows, saveWindows } from "@/components/os/windowStorage";
 import {
+  SYSTEM_BAR_HEIGHT,
   TASKBAR_HEIGHT,
   type ViewportSize,
   type WindowPosition,
   type WindowSize,
   type WindowState,
 } from "@/components/os/windowTypes";
-import { desktopApps, type DesktopApp } from "@/data/desktopApps";
-import { achievements } from "@/data/achievements";
-import { experience } from "@/data/profile";
-import { projects } from "@/data/projects";
+import { desktopApps, type AppId, type DesktopApp } from "@/data/desktopApps";
+
+const CommandPalette = dynamic(() =>
+  import("@/components/os/CommandPalette").then((module) => module.CommandPalette),
+);
 
 function getViewport(): ViewportSize {
   return { width: window.innerWidth, height: window.innerHeight };
 }
 
+const companionMessages: Partial<Record<AppId, string>> = {
+  projects: "Project drive mounted.",
+  research: "Research archive online.",
+  resume: "Personnel record ready.",
+  terminal: "Try the help command.",
+  achievements: "Records verified.",
+};
+
 export function Desktop() {
   const [windows, dispatch] = useReducer(windowReducer, []);
+  const [layout, setLayout] = useState(() => getDefaultDesktopLayout());
   const [hasHydrated, setHasHydrated] = useState(false);
   const [startMenuOpen, setStartMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [appTargets, setAppTargets] = useState<Partial<Record<AppId, string>>>({});
+  const [companionMood, setCompanionMood] = useState<"idle" | "working" | "excited">("idle");
+  const [companionMessage, setCompanionMessage] = useState<string | null>(null);
   const nextZIndex = useRef(1);
+  const companionTimer = useRef<number | null>(null);
+  const playSound = useSystemSound(layout.soundEnabled);
+  const openPalette = useCallback(() => setPaletteOpen(true), []);
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
 
   const takeNextZIndex = () => {
     const zIndex = nextZIndex.current;
@@ -38,6 +70,7 @@ export function Desktop() {
 
   useEffect(() => {
     const storedWindows = loadWindows();
+    const viewport = getViewport();
     const highestZIndex = storedWindows.reduce(
       (highest, windowState) => Math.max(highest, windowState.zIndex),
       0,
@@ -47,46 +80,61 @@ export function Desktop() {
     dispatch({
       type: "hydrate",
       windows: storedWindows,
-      viewport: getViewport(),
+      viewport,
+      preserveGeometry: viewport.width < 640,
     });
+    const storedLayout =
+      viewport.width < 640
+        ? loadDesktopLayout(viewport.width)
+        : clampDesktopLayout(loadDesktopLayout(viewport.width), viewport);
 
     const hydrationReadyTimer = window.setTimeout(() => {
+      setLayout(storedLayout);
       setHasHydrated(true);
     }, 0);
-
     return () => window.clearTimeout(hydrationReadyTimer);
   }, []);
 
   useEffect(() => {
-    const closeStartMenuWithEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setStartMenuOpen(false);
+    const handleGlobalKeys = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
       }
+      if (event.key === "Escape") setStartMenuOpen(false);
     };
-
-    window.addEventListener("keydown", closeStartMenuWithEscape);
-    return () => window.removeEventListener("keydown", closeStartMenuWithEscape);
+    window.addEventListener("keydown", handleGlobalKeys);
+    return () => window.removeEventListener("keydown", handleGlobalKeys);
   }, []);
 
   useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    const persistenceTimer = window.setTimeout(() => {
-      saveWindows(windows);
-    }, 150);
-
+    if (!hasHydrated) return;
+    const persistenceTimer = window.setTimeout(() => saveWindows(windows), 150);
     return () => window.clearTimeout(persistenceTimer);
   }, [hasHydrated, windows]);
 
   useEffect(() => {
-    const keepWindowsInsideViewport = () => {
-      dispatch({ type: "clampToViewport", viewport: getViewport() });
-    };
+    if (!hasHydrated) return;
+    const persistenceTimer = window.setTimeout(() => saveDesktopLayout(layout), 150);
+    return () => window.clearTimeout(persistenceTimer);
+  }, [hasHydrated, layout]);
 
-    window.addEventListener("resize", keepWindowsInsideViewport);
-    return () => window.removeEventListener("resize", keepWindowsInsideViewport);
+  useEffect(() => {
+    const keepDesktopInsideViewport = () => {
+      const viewport = getViewport();
+      if (viewport.width >= 640) {
+        dispatch({ type: "clampToViewport", viewport });
+        setLayout((current) => clampDesktopLayout(current, viewport));
+      }
+    };
+    window.addEventListener("resize", keepDesktopInsideViewport);
+    return () => window.removeEventListener("resize", keepDesktopInsideViewport);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (companionTimer.current !== null) window.clearTimeout(companionTimer.current);
+    };
   }, []);
 
   const activeWindowId =
@@ -94,22 +142,48 @@ export function Desktop() {
       .filter((windowState) => !windowState.minimized)
       .reduce<WindowState | null>(
         (activeWindow, windowState) =>
-          !activeWindow || windowState.zIndex > activeWindow.zIndex
-            ? windowState
-            : activeWindow,
+          !activeWindow || windowState.zIndex > activeWindow.zIndex ? windowState : activeWindow,
         null,
       )?.id ?? null;
 
+  const reactCompanion = useCallback((appId: AppId) => {
+    if (companionTimer.current !== null) window.clearTimeout(companionTimer.current);
+    setCompanionMood(appId === "achievements" ? "excited" : "working");
+    setCompanionMessage(companionMessages[appId] ?? null);
+    companionTimer.current = window.setTimeout(() => {
+      setCompanionMood("idle");
+      setCompanionMessage(null);
+    }, 2600);
+  }, []);
+
   const openApp = (app: DesktopApp) => {
+    const existingWindow = windows.find((windowState) => windowState.app.id === app.id);
+    if (existingWindow) {
+      dispatch({
+        type: "restore",
+        id: existingWindow.id,
+        zIndex: takeNextZIndex(),
+      });
+      playSound("focus");
+      reactCompanion(app.id);
+      return;
+    }
+
     const viewport = getViewport();
-    const availableHeight = Math.max(0, viewport.height - TASKBAR_HEIGHT);
+    const mobile = viewport.width < 640;
+    const availableHeight = Math.max(
+      0,
+      viewport.height - TASKBAR_HEIGHT - SYSTEM_BAR_HEIGHT,
+    );
     const offset = (windows.length % 6) * 28;
-    const size = {
-      width: Math.min(app.defaultSize.width, viewport.width),
-      height: Math.min(app.defaultSize.height, availableHeight),
-    };
+    const size = mobile
+      ? app.defaultSize
+      : {
+          width: Math.min(app.defaultSize.width, viewport.width),
+          height: Math.min(app.defaultSize.height, availableHeight),
+        };
     const maximumX = Math.max(0, viewport.width - size.width);
-    const maximumY = Math.max(0, availableHeight - size.height);
+    const maximumY = Math.max(SYSTEM_BAR_HEIGHT, viewport.height - TASKBAR_HEIGHT - size.height);
 
     dispatch({
       type: "open",
@@ -117,8 +191,8 @@ export function Desktop() {
         id: crypto.randomUUID(),
         app,
         position: {
-          x: Math.min(64 + offset, maximumX),
-          y: Math.min(96 + offset, maximumY),
+          x: Math.min(284 + offset, maximumX),
+          y: Math.min(76 + offset, maximumY),
         },
         size,
         zIndex: takeNextZIndex(),
@@ -126,28 +200,30 @@ export function Desktop() {
         maximized: false,
       },
     });
+    playSound("open");
+    reactCompanion(app.id);
+  };
+
+  const openAppById = (appId: AppId, targetId?: string) => {
+    const app = desktopApps.find((desktopApp) => desktopApp.id === appId);
+    if (!app) return;
+    if (targetId) {
+      setAppTargets((current) => ({ ...current, [appId]: targetId }));
+    }
+    setStartMenuOpen(false);
+    setPaletteOpen(false);
+    openApp(app);
   };
 
   const focusWindow = (id: string) => {
     dispatch({ type: "focus", id, zIndex: takeNextZIndex() });
-  };
-
-  const openAppById = (appId: DesktopApp["id"]) => {
-    const app = desktopApps.find((desktopApp) => desktopApp.id === appId);
-
-    if (app) {
-      setStartMenuOpen(false);
-      openApp(app);
-    }
+    playSound("focus");
   };
 
   const toggleTaskbarWindow = (windowState: WindowState) => {
     if (windowState.minimized) {
-      dispatch({
-        type: "restore",
-        id: windowState.id,
-        zIndex: takeNextZIndex(),
-      });
+      dispatch({ type: "restore", id: windowState.id, zIndex: takeNextZIndex() });
+      playSound("focus");
     } else if (windowState.id === activeWindowId) {
       dispatch({ type: "minimize", id: windowState.id });
     } else {
@@ -155,72 +231,89 @@ export function Desktop() {
     }
   };
 
+  const moveDesktopItem = (itemId: DesktopItemId, position: DesktopItemPosition) => {
+    setLayout((current) => ({
+      ...current,
+      positions: { ...current.positions, [itemId]: position },
+    }));
+  };
+
+  const resetDesktop = () => {
+    setLayout(getDefaultDesktopLayout(window.innerWidth));
+    setStartMenuOpen(false);
+    playSound("reset");
+    setCompanionMood("excited");
+    setCompanionMessage("Desktop restored.");
+    if (companionTimer.current !== null) window.clearTimeout(companionTimer.current);
+    companionTimer.current = window.setTimeout(() => {
+      setCompanionMood("idle");
+      setCompanionMessage(null);
+    }, 2200);
+  };
+
+  const toggleSound = () => {
+    setLayout((current) => ({ ...current, soundEnabled: !current.soundEnabled }));
+  };
+
+  const primaryApps = desktopApps.filter((app) => app.showOnDesktop);
+
   return (
-    <main className="os-screen relative min-h-screen overflow-hidden p-6 pb-20 text-cyan-50 sm:p-8 sm:pb-20">
+    <main className="os-screen desktop-shell text-cyan-50">
       <div className="desktop-grid" aria-hidden="true" />
+      <div className="wallpaper-orbit wallpaper-orbit-one" aria-hidden="true" />
+      <div className="wallpaper-orbit wallpaper-orbit-two" aria-hidden="true" />
+      <div className="wallpaper-wordmark" aria-hidden="true">SONI//KR</div>
       <div className="crt-overlay" aria-hidden="true" />
 
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-20 right-6 text-right"
-        aria-hidden="true"
-      >
-        <p className="text-[clamp(3rem,10vw,9rem)] font-black leading-none tracking-[-0.08em] text-cyan-200/[0.025]">
-          SONI//KR
-        </p>
-        <p className="mr-2 mt-2 text-[0.6rem] uppercase tracking-[0.42em] text-fuchsia-200/15">
-          Personal computing environment
-        </p>
-      </div>
+      <SystemBar
+        soundEnabled={layout.soundEnabled}
+        onOpenApp={openAppById}
+        onOpenPalette={openPalette}
+        onToggleSound={toggleSound}
+      />
 
-      <header className="absolute right-8 top-8 hidden w-72 border border-cyan-300/15 bg-[#041016]/55 p-4 backdrop-blur-sm md:block">
-        <div className="flex items-center justify-between">
-          <p className="text-[0.6rem] uppercase tracking-[0.24em] text-fuchsia-300">
-            System monitor
-          </p>
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.8)]" />
-        </div>
-        <h1 className="mt-3 text-lg font-black text-cyan-50">
-          OperatingSoni<span className="text-fuchsia-400">-KR</span>
-        </h1>
-        <dl className="mt-4 grid grid-cols-3 gap-px bg-cyan-300/15 text-center">
-          <div className="bg-[#06151d]/90 p-2">
-            <dt className="text-lg font-black text-cyan-100">{projects.length}</dt>
-            <dd className="text-[0.5rem] uppercase tracking-[0.12em] text-cyan-100/35">
-              Projects
-            </dd>
-          </div>
-          <div className="bg-[#06151d]/90 p-2">
-            <dt className="text-lg font-black text-cyan-100">{experience.length}</dt>
-            <dd className="text-[0.5rem] uppercase tracking-[0.12em] text-cyan-100/35">
-              Research
-            </dd>
-          </div>
-          <div className="bg-[#06151d]/90 p-2">
-            <dt className="text-lg font-black text-cyan-100">
-              {achievements.length}
-            </dt>
-            <dd className="text-[0.5rem] uppercase tracking-[0.12em] text-cyan-100/35">
-              Records
-            </dd>
-          </div>
-        </dl>
-        <p className="mt-3 text-[0.6rem] uppercase tracking-[0.14em] text-cyan-100/30">
-          Double-click icons // OS button opens launcher
-        </p>
-      </header>
+      <section className="desktop-intro" aria-labelledby="portfolio-owner">
+        <p>Personal Engineering System // TUN-01</p>
+        <h1 id="portfolio-owner">Mourad Kraiem</h1>
+        <h2>Computer Science Engineering Student</h2>
+        <div className="desktop-intro-rule" />
+        <strong>Artificial Intelligence &amp; Machine Learning</strong>
+        <span>Enter the Engineering Workspace.</span>
+      </section>
 
-      <section
-        className="relative grid w-fit grid-cols-2 gap-x-3 gap-y-2 sm:grid-flow-col sm:grid-cols-none sm:grid-rows-3 sm:gap-x-4 sm:gap-y-3"
-        aria-label="Desktop icons"
-      >
-        {desktopApps.map((app) => (
-          <DesktopIcon
+      <section className="desktop-items-layer" aria-label="Desktop applications and widgets">
+        {primaryApps.map((app) => (
+          <DesktopItem
             key={app.id}
-            symbol={app.symbol}
-            label={app.label}
-            onOpen={() => openAppById(app.id)}
-          />
+            position={layout.positions[`app-${app.id}`]}
+            width={104}
+            height={104}
+            className="desktop-item-app"
+            onMove={(position) => moveDesktopItem(`app-${app.id}`, position)}
+          >
+            <DesktopIcon appId={app.id} label={app.label} onOpen={() => openAppById(app.id)} />
+          </DesktopItem>
         ))}
+
+        <DesktopItem
+          position={layout.positions["status-widget"]}
+          width={252}
+          height={148}
+          className="desktop-item-status"
+          onMove={(position) => moveDesktopItem("status-widget", position)}
+        >
+          <StatusWidget />
+        </DesktopItem>
+
+        <DesktopItem
+          position={layout.positions["pixel-mourad"]}
+          width={176}
+          height={248}
+          className="desktop-item-companion"
+          onMove={(position) => moveDesktopItem("pixel-mourad", position)}
+        >
+          <PixelMourad mood={companionMood} message={companionMessage} />
+        </DesktopItem>
       </section>
 
       {windows.map((windowState) => (
@@ -229,48 +322,36 @@ export function Desktop() {
           windowState={windowState}
           active={windowState.id === activeWindowId}
           onFocus={() => focusWindow(windowState.id)}
-          onMove={(position: WindowPosition) =>
-            dispatch({ type: "move", id: windowState.id, position })
-          }
-          onResize={(size: WindowSize) =>
-            dispatch({ type: "resize", id: windowState.id, size })
-          }
-          onMinimize={() =>
-            dispatch({ type: "minimize", id: windowState.id })
-          }
-          onToggleMaximize={() =>
-            dispatch({
-              type: "toggleMaximize",
-              id: windowState.id,
-              zIndex: takeNextZIndex(),
-            })
-          }
+          onMove={(position: WindowPosition) => dispatch({ type: "move", id: windowState.id, position })}
+          onResize={(size: WindowSize) => dispatch({ type: "resize", id: windowState.id, size })}
+          onMinimize={() => dispatch({ type: "minimize", id: windowState.id })}
+          onToggleMaximize={() => dispatch({ type: "toggleMaximize", id: windowState.id, zIndex: takeNextZIndex() })}
           onClose={() => dispatch({ type: "close", id: windowState.id })}
         >
           <AppContent
             appId={windowState.app.id}
+            targetId={appTargets[windowState.app.id]}
             onOpenApp={openAppById}
+            onResetDesktop={resetDesktop}
           />
         </Window>
       ))}
 
       {startMenuOpen && (
         <>
-          <button
-            type="button"
-            className="absolute inset-0 z-[2147483644] cursor-default"
-            onClick={() => setStartMenuOpen(false)}
-            aria-label="Close application launcher"
-          />
-          <StartMenu apps={desktopApps} onOpenApp={openAppById} />
+          <button type="button" className="absolute inset-0 z-[2147483644] cursor-default" onClick={() => setStartMenuOpen(false)} aria-label="Close application launcher" />
+          <StartMenu apps={desktopApps} onOpenApp={openAppById} onOpenPalette={openPalette} onResetDesktop={resetDesktop} />
         </>
       )}
+
+      {paletteOpen && <CommandPalette onClose={closePalette} onOpenApp={openAppById} onResetDesktop={resetDesktop} />}
 
       <Taskbar
         windows={windows}
         activeWindowId={activeWindowId}
         startMenuOpen={startMenuOpen}
-        onToggleStartMenu={() => setStartMenuOpen((isOpen) => !isOpen)}
+        soundEnabled={layout.soundEnabled}
+        onToggleStartMenu={() => setStartMenuOpen((open) => !open)}
         onToggleWindow={toggleTaskbarWindow}
       />
     </main>

@@ -4,12 +4,13 @@ export type AppId =
   | "achievements"
   | "about"
   | "contact"
-  | "terminal";
+  | "terminal"
+  | "resume";
 
 export type DesktopApp = {
   id: AppId;
-  symbol: string;
   label: string;
+  showOnDesktop: boolean;
   defaultSize: {
     width: number;
     height: number;
@@ -19,38 +20,44 @@ export type DesktopApp = {
 export const desktopApps: DesktopApp[] = [
   {
     id: "projects",
-    symbol: "▱",
     label: "Projects",
+    showOnDesktop: true,
     defaultSize: { width: 760, height: 540 },
   },
   {
     id: "research",
-    symbol: "⌘",
     label: "Research",
+    showOnDesktop: true,
     defaultSize: { width: 720, height: 560 },
   },
   {
     id: "achievements",
-    symbol: "★",
     label: "Achievements",
+    showOnDesktop: false,
     defaultSize: { width: 700, height: 540 },
   },
   {
     id: "about",
-    symbol: "◎",
     label: "About",
+    showOnDesktop: true,
     defaultSize: { width: 700, height: 560 },
   },
   {
     id: "contact",
-    symbol: "@",
     label: "Contact",
+    showOnDesktop: false,
     defaultSize: { width: 560, height: 420 },
   },
   {
     id: "terminal",
-    symbol: ">_",
     label: "Terminal",
+    showOnDesktop: false,
     defaultSize: { width: 680, height: 440 },
   },
+  {
+    id: "resume",
+    label: "Resume",
+    showOnDesktop: true,
+    defaultSize: { width: 620, height: 420 },
+},
 ];

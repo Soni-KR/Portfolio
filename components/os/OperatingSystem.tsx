@@ -1,25 +1,20 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { BootScreen } from "@/components/os/BootScreen";
-import { Desktop } from "@/components/os/Desktop";
-import { WelcomeScreen } from "@/components/os/WelcomeScreen";
 
-type SystemPhase = "boot" | "welcome" | "desktop";
+const Desktop = dynamic(() =>
+  import("@/components/os/Desktop").then((module) => module.Desktop),
+);
+
+type SystemPhase = "boot" | "desktop";
 
 export function OperatingSystem() {
   const [phase, setPhase] = useState<SystemPhase>("boot");
 
-  const showWelcomeScreen = useCallback(() => {
-    setPhase("welcome");
-  }, []);
-
   if (phase === "boot") {
-    return <BootScreen onComplete={showWelcomeScreen} />;
-  }
-
-  if (phase === "welcome") {
-    return <WelcomeScreen onEnter={() => setPhase("desktop")} />;
+    return <BootScreen onComplete={() => setPhase("desktop")} />;
   }
 
   return <Desktop />;

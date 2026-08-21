@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { WindowState } from "@/components/os/windowTypes";
+import { AppIcon } from "@/components/os/AppIcon";
 
 type TaskbarProps = {
   windows: WindowState[];
@@ -7,6 +8,7 @@ type TaskbarProps = {
   startMenuOpen: boolean;
   onToggleStartMenu: () => void;
   onToggleWindow: (windowState: WindowState) => void;
+  soundEnabled: boolean;
 };
 
 export function Taskbar({
@@ -15,6 +17,7 @@ export function Taskbar({
   startMenuOpen,
   onToggleStartMenu,
   onToggleWindow,
+  soundEnabled,
 }: TaskbarProps) {
   const [clock, setClock] = useState("--:--");
 
@@ -53,7 +56,7 @@ export function Taskbar({
         </span>
         <div className="hidden sm:block">
           <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-cyan-100">
-            OperatingSoni-KR
+          OSKR
           </p>
           <p className="text-[0.55rem] uppercase tracking-[0.14em] text-cyan-100/35">
             Local session
@@ -61,7 +64,7 @@ export function Taskbar({
         </div>
       </button>
 
-      <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto">
+      <div className="taskbar-apps flex min-w-0 flex-1 gap-2 overflow-x-auto">
         {windows.map((windowState) => {
           const isActive = windowState.id === activeWindowId;
 
@@ -79,7 +82,7 @@ export function Taskbar({
                 windowState.minimized ? "Restore" : isActive ? "Minimize" : "Focus"
               } ${windowState.app.label} window`}
             >
-              <span aria-hidden="true">{windowState.app.symbol}</span>
+              <AppIcon appId={windowState.app.id} size="small" />
               <span className="truncate">{windowState.app.label}</span>
             </button>
           );
@@ -87,6 +90,9 @@ export function Taskbar({
       </div>
 
       <div className="flex shrink-0 items-center gap-3 border-l border-cyan-300/20 pl-3 sm:pl-4">
+        <span className="hidden text-[0.55rem] uppercase tracking-[0.12em] text-cyan-100/30 md:block">
+          {soundEnabled ? "sound on" : "muted"}
+        </span>
         <span className="hidden h-2 w-2 animate-pulse rounded-full bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.7)] sm:block" />
         <time className="text-xs font-bold tracking-[0.16em] text-cyan-100" dateTime={clock}>
           {clock}

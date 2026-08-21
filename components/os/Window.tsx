@@ -9,11 +9,13 @@ import {
 import {
   MIN_WINDOW_HEIGHT,
   MIN_WINDOW_WIDTH,
+  SYSTEM_BAR_HEIGHT,
   TASKBAR_HEIGHT,
   type WindowPosition,
   type WindowSize,
   type WindowState,
 } from "@/components/os/windowTypes";
+import { AppIcon } from "@/components/os/AppIcon";
 
 type InteractionState =
   | {
@@ -65,6 +67,7 @@ export function Window({
   const interaction = useRef<InteractionState | null>(null);
   const pendingUpdate = useRef<PendingUpdate | null>(null);
   const animationFrame = useRef<number | null>(null);
+  const windowElement = useRef<HTMLElement | null>(null);
 
   const scheduleUpdate = (update: PendingUpdate) => {
     pendingUpdate.current = update;
@@ -95,8 +98,14 @@ export function Window({
     };
   }, []);
 
+  useEffect(() => {
+    if (active && !windowState.minimized) {
+      windowElement.current?.focus({ preventScroll: true });
+    }
+  }, [active, windowState.minimized]);
+
   const startDragging = (event: PointerEvent<HTMLDivElement>) => {
-    if (windowState.maximized) {
+    if (windowState.maximized || window.innerWidth < 640) {
       return;
     }
 
@@ -127,7 +136,7 @@ export function Window({
       currentInteraction.position.y + event.clientY - currentInteraction.pointerY;
     const maximumX = Math.max(0, window.innerWidth - windowState.size.width);
     const maximumY = Math.max(
-      0,
+      SYSTEM_BAR_HEIGHT,
       window.innerHeight - TASKBAR_HEIGHT - windowState.size.height,
     );
 
@@ -135,7 +144,7 @@ export function Window({
       kind: "move",
       position: {
         x: clamp(nextX, 0, maximumX),
-        y: clamp(nextY, 0, maximumY),
+        y: clamp(nextY, SYSTEM_BAR_HEIGHT, maximumY),
       },
     });
   };
@@ -148,6 +157,10 @@ export function Window({
   };
 
   const startResizing = (event: PointerEvent<HTMLButtonElement>) => {
+    if (window.innerWidth < 640) {
+      return;
+    }
+
     event.stopPropagation();
     onFocus();
     interaction.current = {
@@ -244,7 +257,7 @@ export function Window({
   const windowStyle: CSSProperties = windowState.minimized
     ? { display: "none" }
     : windowState.maximized
-      ? { inset: `0 0 ${TASKBAR_HEIGHT}px 0`, zIndex: windowState.zIndex }
+      ? { inset: `${SYSTEM_BAR_HEIGHT}px 0 ${TASKBAR_HEIGHT}px 0`, zIndex: windowState.zIndex }
       : {
         left: windowState.position.x,
         top: windowState.position.y,
@@ -255,7 +268,8 @@ export function Window({
 
   return (
     <section
-      className={`absolute flex flex-col overflow-hidden border bg-[#06151d]/95 shadow-[12px_16px_0_rgba(0,0,0,0.35),0_0_40px_rgba(34,211,238,0.05)] backdrop-blur-sm ${
+      ref={windowElement}
+      className={`os-window absolute flex flex-col overflow-hidden border bg-[#06151d]/95 shadow-[12px_16px_0_rgba(0,0,0,0.35),0_0_40px_rgba(34,211,238,0.05)] backdrop-blur-sm ${
         windowState.maximized ? "rounded-none" : "rounded-sm"
       } ${
         active
@@ -264,6 +278,7 @@ export function Window({
       }`}
       style={windowStyle}
       onPointerDown={onFocus}
+      tabIndex={-1}
       aria-label={`${windowState.app.label} window`}
     >
       <header
@@ -277,9 +292,7 @@ export function Window({
         onPointerCancel={stopDragging}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid h-6 w-6 shrink-0 place-items-center border border-fuchsia-300/40 bg-fuchsia-400/10 text-[0.65rem] font-bold text-fuchsia-200">
-            {windowState.app.symbol}
-          </span>
+          <AppIcon appId={windowState.app.id} size="small" />
           <div className="min-w-0">
             <h2 className="truncate text-xs font-bold uppercase tracking-[0.18em] text-cyan-50">
               {windowState.app.label}
@@ -324,14 +337,14 @@ export function Window({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-auto bg-[linear-gradient(rgba(34,211,238,0.025)_1px,transparent_1px)] bg-[length:100%_24px] p-6">
+      <div className="min-h-0 flex-1 overflow-auto bg-[linear-gradient(rgba(34,211,238,0.025)_1px,transparent_1px)] bg-[length:100%_24px] p-4 sm:p-6">
         {children}
       </div>
 
       {!windowState.maximized && (
         <button
           type="button"
-          className="absolute bottom-0 right-0 h-6 w-6 cursor-nwse-resize touch-none border-0 bg-transparent after:absolute after:bottom-1 after:right-1 after:h-2 after:w-2 after:border-b-2 after:border-r-2 after:border-cyan-400/60 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-300"
+          className="absolute bottom-0 right-0 hidden h-6 w-6 cursor-nwse-resize touch-none border-0 bg-transparent after:absolute after:bottom-1 after:right-1 after:h-2 after:w-2 after:border-b-2 after:border-r-2 after:border-cyan-400/60 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-300 sm:block"
           onPointerDown={startResizing}
           onPointerMove={resize}
           onPointerUp={stopResizing}

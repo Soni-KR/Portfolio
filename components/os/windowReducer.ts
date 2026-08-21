@@ -1,6 +1,7 @@
 import {
   MIN_WINDOW_HEIGHT,
   MIN_WINDOW_WIDTH,
+  SYSTEM_BAR_HEIGHT,
   TASKBAR_HEIGHT,
   type ViewportSize,
   type WindowPosition,
@@ -22,6 +23,7 @@ export type WindowAction =
       type: "hydrate";
       windows: WindowState[];
       viewport: ViewportSize;
+      preserveGeometry?: boolean;
     };
 
 function clamp(value: number, minimum: number, maximum: number) {
@@ -32,7 +34,7 @@ function clampWindowToViewport(
   windowState: WindowState,
   viewport: ViewportSize,
 ): WindowState {
-  const availableHeight = Math.max(0, viewport.height - TASKBAR_HEIGHT);
+  const availableHeight = Math.max(0, viewport.height - TASKBAR_HEIGHT - SYSTEM_BAR_HEIGHT);
   const minimumWidth = Math.min(MIN_WINDOW_WIDTH, viewport.width);
   const minimumHeight = Math.min(MIN_WINDOW_HEIGHT, availableHeight);
 
@@ -46,13 +48,16 @@ function clampWindowToViewport(
   };
 
   const maximumX = Math.max(0, viewport.width - size.width);
-  const maximumY = Math.max(0, availableHeight - size.height);
+  const maximumY = Math.max(
+    SYSTEM_BAR_HEIGHT,
+    viewport.height - TASKBAR_HEIGHT - size.height,
+  );
 
   return {
     ...windowState,
     position: {
       x: clamp(windowState.position.x, 0, maximumX),
-      y: clamp(windowState.position.y, 0, maximumY),
+      y: clamp(windowState.position.y, SYSTEM_BAR_HEIGHT, maximumY),
     },
     size,
   };
@@ -126,6 +131,10 @@ export function windowReducer(
       );
 
     case "hydrate":
+      if (action.preserveGeometry) {
+        return action.windows;
+      }
+
       return action.windows.map((windowState) =>
         clampWindowToViewport(windowState, action.viewport),
       );

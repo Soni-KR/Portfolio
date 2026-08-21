@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 const bootMessages = [
-  "MEMORY ARRAY .............. 64 TB VIRTUAL",
-  "NEURAL BUS ............... SYNCHRONIZED",
-  "PORTFOLIO ARCHIVE ........ MOUNTED",
-  "WINDOW MANAGER ........... ONLINE",
-  "AESTHETIC MODULE ......... RETRO-ANIME",
-  "LOCAL USER ............... DETECTED",
+  "PROFILE .................. MOURAD KRAIEM",
+  "LOCATION ................. TUNISIA",
+  "FOCUS .................... AI / MACHINE LEARNING",
+  "PROJECT ARCHIVE .......... MOUNTED",
+  "RESEARCH RECORDS ......... LOADED",
+  "SYSTEM ................... READY",
 ];
 
 type BootScreenProps = {
@@ -20,6 +20,14 @@ export function BootScreen({ onComplete }: BootScreenProps) {
   );
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const reducedMotionTimer = window.setTimeout(() => {
+        setVisibleMessageCount(bootMessages.length);
+        onComplete();
+      }, 120);
+      return () => window.clearTimeout(reducedMotionTimer);
+    }
+
     const messageTimer = window.setInterval(() => {
       setVisibleMessageCount((currentCount) => {
         if (currentCount >= bootMessages.length) {
@@ -29,8 +37,8 @@ export function BootScreen({ onComplete }: BootScreenProps) {
 
         return currentCount + 1;
       });
-    }, 320);
-    const completionTimer = window.setTimeout(onComplete, 2800);
+    }, 220);
+    const completionTimer = window.setTimeout(onComplete, 1900);
 
     return () => {
       window.clearInterval(messageTimer);
@@ -44,7 +52,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
 
       <section className="screen-enter w-full max-w-3xl" aria-labelledby="boot-title">
         <div className="mb-10 flex items-center justify-between border-b border-cyan-300/30 pb-3 text-[0.65rem] uppercase tracking-[0.28em] text-cyan-200/60">
-          <span>SONI SYSTEMS // TUN NODE 01</span>
+          <span>PERSONAL SYSTEMS // TUN NODE 01</span>
           <span>POST REV. 1.0</span>
         </div>
 
@@ -55,7 +63,7 @@ export function BootScreen({ onComplete }: BootScreenProps) {
           OperatingSoni<span className="text-fuchsia-400">-KR</span>
         </h1>
         <p className="mt-3 text-sm text-cyan-100/50">
-          Copyright 2026 // All creative processes nominal
+          Mourad Kraiem // Portfolio System
         </p>
 
         <div

@@ -1,6 +1,7 @@
 import type { DesktopApp } from "@/data/desktopApps";
 
 export const TASKBAR_HEIGHT = 56;
+export const SYSTEM_BAR_HEIGHT = 40;
 export const MIN_WINDOW_WIDTH = 280;
 export const MIN_WINDOW_HEIGHT = 200;
 

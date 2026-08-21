@@ -7,8 +7,12 @@ import {
 } from "react";
 import { achievements } from "@/data/achievements";
 import { desktopApps, type AppId } from "@/data/desktopApps";
-import { experience, profile, skillGroups } from "@/data/profile";
+import { education } from "@/data/education";
+import { experience } from "@/data/experience";
+import { profile } from "@/data/profile";
 import { projects } from "@/data/projects";
+import { research } from "@/data/research";
+import { skillGroups } from "@/data/skills";
 
 type TerminalLine = {
   id: number;
@@ -18,6 +22,7 @@ type TerminalLine = {
 
 type TerminalAppProps = {
   onOpenApp: (appId: AppId) => void;
+  onResetDesktop: () => void;
 };
 
 const initialLines: TerminalLine[] = [
@@ -41,19 +46,25 @@ const commandHelp = [
   "skills               list technical skills",
   "experience           list research internships",
   "research             list research internships",
+  "resume               open the interactive resume",
+  "education            list education records",
   "achievements         list awards and leadership",
   "apps                 list graphical applications",
   "contact              print verified contact links",
+  "github               print the GitHub profile",
   "open <app>           open a graphical application",
+  "reset desktop       restore desktop item positions",
   "clear                erase terminal history",
 ];
 
-export function TerminalApp({ onOpenApp }: TerminalAppProps) {
+export function TerminalApp({ onOpenApp, onResetDesktop }: TerminalAppProps) {
   const inputId = useId();
   const [lines, setLines] = useState<TerminalLine[]>(initialLines);
   const [input, setInput] = useState("");
   const nextLineId = useRef(initialLines.length + 1);
   const outputEnd = useRef<HTMLDivElement | null>(null);
+  const commandHistory = useRef<string[]>([]);
+  const historyIndex = useRef(0);
 
   useEffect(() => {
     outputEnd.current?.scrollIntoView({ block: "nearest" });
@@ -110,7 +121,7 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
         output = [
           ...projects.map((project, index) => ({
             kind: "output" as const,
-            text: `${index + 1}. ${project.name} - ${project.category}`,
+            text: `${index + 1}. ${project.name} - ${project.domains.join(" / ")}`,
           })),
           {
             kind: "output",
@@ -127,10 +138,28 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
         break;
 
       case "experience":
-      case "research":
         output = experience.map((item) => ({
           kind: "output",
           text: `${item.period} // ${item.title} @ ${item.organization}`,
+        }));
+        break;
+
+      case "research":
+        output = research.map((item) => ({
+          kind: "output",
+          text: `${item.status} // ${item.title}`,
+        }));
+        break;
+
+      case "resume":
+        onOpenApp("resume");
+        output = [{ kind: "output", text: "Launching interactive resume..." }];
+        break;
+
+      case "education":
+        output = education.map((item) => ({
+          kind: "output",
+          text: `${item.period} // ${item.degree} @ ${item.institution}`,
         }));
         break;
 
@@ -156,6 +185,10 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
         ];
         break;
 
+      case "github":
+        output = [{ kind: "output", text: profile.links.github }];
+        break;
+
       case "open": {
         const requestedApp = argumentsList[0];
         const app = desktopApps.find((item) => item.id === requestedApp);
@@ -178,6 +211,38 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
         }
         break;
       }
+
+      case "reset":
+        if (argumentsList[0] === "desktop") {
+          onResetDesktop();
+          output = [{ kind: "output", text: "Desktop layout restored to system defaults." }];
+        } else {
+          output = [{ kind: "error", text: "Usage: reset desktop" }];
+        }
+        break;
+
+      case "soni":
+        output = [
+          { kind: "output", text: "Momentum protocol armed. Keep moving forward." },
+          { kind: "output", text: "No borrowed sprites were found in this system." },
+        ];
+        break;
+
+      case "sanji":
+        output = [{ kind: "output", text: "Kitchen process online. Precision, timing, no wasted motion." }];
+        break;
+
+      case "inter":
+        output = [{ kind: "output", text: "Black and blue signal detected. Forza Inter." }];
+        break;
+
+      case "stand":
+        output = [{ kind: "output", text: "Stand process invisible. System effect: dramatic confidence +100." }];
+        break;
+
+      case "peni":
+        output = [{ kind: "output", text: "Mech-pilot affinity registered. No proprietary assets mounted." }];
+        break;
 
       case "":
         return;
@@ -203,7 +268,20 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
     }
 
     setInput("");
+    if (commandHistory.current.at(-1) !== command) {
+      commandHistory.current.push(command);
+    }
+    historyIndex.current = commandHistory.current.length;
     runCommand(command);
+  };
+
+  const navigateHistory = (direction: "older" | "newer") => {
+    if (commandHistory.current.length === 0) return;
+    historyIndex.current = Math.min(
+      commandHistory.current.length,
+      Math.max(0, historyIndex.current + (direction === "older" ? -1 : 1)),
+    );
+    setInput(commandHistory.current[historyIndex.current] ?? "");
   };
 
   return (
@@ -242,7 +320,17 @@ export function TerminalApp({ onOpenApp }: TerminalAppProps) {
           className="min-w-0 flex-1 bg-transparent text-cyan-50 caret-fuchsia-300 outline-none placeholder:text-cyan-100/25"
           value={input}
           onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              navigateHistory("older");
+            } else if (event.key === "ArrowDown") {
+              event.preventDefault();
+              navigateHistory("newer");
+            }
+          }}
           placeholder="help"
+          aria-label="Terminal command"
           autoComplete="off"
           spellCheck={false}
         />
