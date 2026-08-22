@@ -201,7 +201,7 @@ export function Desktop() {
         positions: {
           ...current.positions,
           "status-widget": {
-            x: Math.max(280, window.innerWidth - 292),
+            x: Math.max(280, window.innerWidth - 368),
             y: 82,
           },
         },
@@ -367,14 +367,14 @@ export function Desktop() {
         onToggleSound={toggleSound}
       />
 
-      <section className="desktop-intro" aria-labelledby="portfolio-owner">
+      {/* <section className="desktop-intro" aria-labelledby="portfolio-owner">
         <p>Personal Engineering System // TUN-01</p>
         <h1 id="portfolio-owner">Mourad Kraiem</h1>
         <h2>Computer Science Engineering Student</h2>
         <div className="desktop-intro-rule" />
         <strong>Artificial Intelligence &amp; Machine Learning</strong>
         <span>Enter the Engineering Workspace.</span>
-      </section>
+      </section> */}
 
       <section className="desktop-items-layer" aria-label="Desktop applications and widgets">
         {primaryApps.map((app) => (
@@ -392,8 +392,8 @@ export function Desktop() {
 
         <DesktopItem
           position={layout.positions["status-widget"]}
-          width={252}
-          height={148}
+          width={328}
+          height={230}
           className="desktop-item-status"
           onMove={(position) => moveDesktopItem("status-widget", position)}
         >

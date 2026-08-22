@@ -105,7 +105,7 @@ Resume updates should replace `public/resume.pdf` while keeping the same filenam
 - Window behavior: `components/os/windowReducer.ts` and `components/os/Window.tsx`
 - Animated, interactive wallpaper and mascot behavior: `components/os/WorkspaceWallpaper.tsx`
 - Identity-based avatar poses: `public/avatar/`
-- Cohesive illustrated room backdrop: `public/wallpaper/oskr-interests-room-v2.webp`
+- Cohesive illustrated room backdrop: `public/wallpaper/oskr-interests-room-final.webp`
 - Wallpaper, mascot, cursor, and responsive styling: `app/globals.css`
 - Terminal commands and easter eggs: `components/apps/TerminalApp.tsx`
 

@@ -268,65 +268,169 @@ button {
   color: rgba(242, 227, 196, 0.56);
 }
 
-.desktop-intro {
-  position: absolute;
-  z-index: 1;
-  left: clamp(17.5rem, 26vw, 25rem);
-  top: 5rem;
-  width: min(31rem, 42vw);
-  pointer-events: none;
+.identity-widget {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(97, 214, 214, 0.34);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(7, 22, 27, 0.96),
+      rgba(5, 14, 18, 0.9)
+    );
+
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, 0.28),
+    inset 0 0 30px rgba(97, 214, 214, 0.025);
+
+  backdrop-filter: blur(9px);
 }
 
-.desktop-intro > p {
-  font-size: 0.6rem;
-  letter-spacing: 0.24em;
+.identity-widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid rgba(97, 214, 214, 0.16);
+
+  padding: 0.5rem 0.7rem;
+
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(97, 214, 214, 0.42);
+
+  color: rgba(207, 250, 254, 0.48);
 }
 
-.desktop-intro h1 {
-  margin-top: 0.75rem;
-  font-size: clamp(2.3rem, 4.4vw, 4.8rem);
+.identity-widget-main {
+  padding: 0.8rem 0.85rem 0.6rem;
+}
+
+.identity-system {
+  font-size: 0.44rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+
+  color: rgba(97, 214, 214, 0.5);
+}
+
+.identity-widget-main h1 {
+  margin-top: 0.35rem;
+
+  font-size: 1.45rem;
   font-weight: 900;
-  line-height: 0.94;
-  letter-spacing: -0.06em;
+
+  line-height: 1;
+
+  letter-spacing: -0.045em;
+
   color: var(--os-paper);
-  text-shadow: 4px 4px 0 rgba(97, 214, 214, 0.08);
 }
 
-.desktop-intro h2 {
-  margin-top: 0.85rem;
-  font-size: clamp(0.72rem, 1.1vw, 0.95rem);
+.identity-role {
+  margin-top: 0.38rem;
+
+  font-size: 0.61rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  color: rgba(207, 250, 254, 0.6);
+
+  color: rgba(207, 250, 254, 0.66);
 }
 
-.desktop-intro-rule {
-  width: min(18rem, 70%);
+.identity-divider {
+  width: 6rem;
   height: 1px;
-  margin: 1.1rem 0;
-  background: linear-gradient(90deg, var(--os-amber), transparent);
+
+  margin: 0.58rem 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--os-amber),
+      transparent
+    );
 }
 
-.desktop-intro strong,
-.desktop-intro span {
+.identity-specialty {
   display: block;
-}
 
-.desktop-intro strong {
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
+  font-size: 0.5rem;
+
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: rgba(244, 184, 96, 0.76);
+
+  color: rgba(244, 184, 96, 0.84);
 }
 
-.desktop-intro span {
-  margin-top: 0.85rem;
-  font-size: 0.76rem;
-  color: rgba(207, 250, 254, 0.36);
+.identity-welcome {
+  margin-top: 0.35rem;
+
+  font-size: 0.56rem;
+
+  color: rgba(207, 250, 254, 0.42);
 }
 
+.identity-meta {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: auto;
+
+  border-top: 1px solid rgba(97, 214, 214, 0.13);
+  border-bottom: 1px solid rgba(97, 214, 214, 0.13);
+}
+
+.identity-meta > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+
+  padding: 0.48rem 0.55rem;
+
+  border-right: 1px solid rgba(97, 214, 214, 0.1);
+}
+
+.identity-meta > span:last-child {
+  border-right: 0;
+}
+
+.identity-meta small {
+  font-size: 0.38rem;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: rgba(207, 250, 254, 0.3);
+}
+
+.identity-meta strong {
+  font-size: 0.51rem;
+
+  letter-spacing: 0.06em;
+
+  color: rgba(207, 250, 254, 0.72);
+}
+
+.identity-widget-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.38rem 0.65rem;
+
+  font-size: 0.35rem;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: rgba(207, 250, 254, 0.25);
+}
 .wallpaper-wordmark {
   position: absolute;
   left: 48%;

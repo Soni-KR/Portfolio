@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import type { AppId } from "@/data/desktopApps";
 
+
 type CompanionMood = "idle" | "working" | "excited";
 
 type WorkspaceWallpaperProps = {
@@ -154,7 +155,7 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
     >
       <div className="lab-room-canvas">
         <Image
-          src="/wallpaper/oskr-interests-room-v2.webp"
+          src="/wallpaper/oskr-interests-room-final.webp"
           alt=""
           fill
           priority

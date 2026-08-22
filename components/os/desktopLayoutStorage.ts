@@ -24,7 +24,7 @@ const itemSizes: Record<DesktopItemId, { width: number; height: number }> = {
   "app-achievements": { width: 104, height: 104 },
   "app-contact": { width: 104, height: 104 },
   "app-terminal": { width: 104, height: 104 },
-  "status-widget": { width: 252, height: 148 },
+  "status-widget": { width: 328, height: 230 },
 };
 
 export function getDefaultDesktopLayout(viewportWidth = 1280): DesktopLayout {
@@ -39,7 +39,7 @@ export function getDefaultDesktopLayout(viewportWidth = 1280): DesktopLayout {
       "app-achievements": { x: 28, y: 318 },
       "app-contact": { x: 140, y: 318 },
       "app-terminal": { x: 28, y: 436 },
-      "status-widget": { x: Math.max(280, viewportWidth - 292), y: 82 },
+      "status-widget": { x: Math.max(280, viewportWidth - 368), y: 82 },
     },
   };
 }
