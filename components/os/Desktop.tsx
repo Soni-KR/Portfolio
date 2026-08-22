@@ -4,9 +4,10 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { AppContent } from "@/components/apps/AppContent";
 import { CustomCursor } from "@/components/os/CustomCursor";
-import { DesktopIcon } from "@/components/os/DesktopIcon";
+
 import { DesktopItem } from "@/components/os/DesktopItem";
 import { StatusWidget } from "@/components/os/DesktopWidgets";
+import { DesktopDock } from "@/components/os/DesktopDock";
 import {
   clampDesktopLayout,
   getDefaultDesktopLayout,
@@ -337,7 +338,8 @@ export function Desktop() {
     setLayout((current) => ({ ...current, soundEnabled: !current.soundEnabled }));
   };
 
-  const primaryApps = desktopApps.filter((app) => app.showOnDesktop);
+  const runningApps = new Set(
+  windows.map((windowState) => windowState.app.id),);
 
   return (
     <main className={`os-screen desktop-shell text-cyan-50 ${overdriveActive ? "os-overdrive" : ""}`}>
@@ -377,18 +379,6 @@ export function Desktop() {
       </section> */}
 
       <section className="desktop-items-layer" aria-label="Desktop applications and widgets">
-        {primaryApps.map((app) => (
-          <DesktopItem
-            key={app.id}
-            position={layout.positions[`app-${app.id}`]}
-            width={104}
-            height={104}
-            className="desktop-item-app"
-            onMove={(position) => moveDesktopItem(`app-${app.id}`, position)}
-          >
-            <DesktopIcon appId={app.id} label={app.label} onOpen={() => openAppById(app.id)} />
-          </DesktopItem>
-        ))}
 
         <DesktopItem
           position={layout.positions["status-widget"]}
@@ -401,7 +391,7 @@ export function Desktop() {
         </DesktopItem>
 
       </section>
-
+      <DesktopDock onOpenApp={openAppById} runningApps={runningApps} />
       {windows.map((windowState) => (
         <Window
           key={windowState.id}

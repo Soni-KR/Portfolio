@@ -170,14 +170,6 @@ export function WorkspaceWallpaper({ mood, message, onOpenApp }: WorkspaceWallpa
         <span className="scene-particle scene-particle-two" aria-hidden="true" />
         <span className="scene-particle scene-particle-three" aria-hidden="true" />
 
-        <div className="room-theme-rail" aria-hidden="true">
-          <span>TUN//01</span>
-          <span>AI/ML</span>
-          <span>GRAPH-RAG</span>
-          <span>RETRO//GAME</span>
-          <span>ANIME//TECH</span>
-          <span>FOOTBALL//ML</span>
-        </div>
 
         <button
           type="button"

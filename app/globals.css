@@ -803,34 +803,6 @@ button {
   transition: filter 650ms ease, opacity 650ms ease;
 }
 
-.room-theme-rail {
-  position: absolute;
-  left: 50%;
-  bottom: 1rem;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 0.38rem;
-  pointer-events: none;
-  transform: translateX(-50%);
-}
-
-.room-theme-rail span {
-  border: 1px solid rgba(97, 214, 214, 0.28);
-  background: rgba(3, 13, 17, 0.78);
-  padding: 0.28rem 0.42rem;
-  color: rgba(207, 250, 254, 0.65);
-  font-size: clamp(0.38rem, 0.43vw, 0.52rem);
-  letter-spacing: 0.13em;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px);
-}
-
-.room-theme-rail span:nth-child(2n) {
-  border-color: rgba(244, 184, 96, 0.34);
-  color: rgba(244, 184, 96, 0.72);
-}
-
 .room-hotspot {
   position: absolute;
   z-index: 6;
@@ -1907,7 +1879,235 @@ button {
     display: block;
   }
 }
+/* =========================================================
+   OSKR FLOATING DOCK
+   ========================================================= */
 
+.desktop-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 4.5rem;
+
+  z-index: 100;
+
+  transform: translateX(-50%);
+
+  pointer-events: auto;
+}
+
+.desktop-dock-inner {
+  position: relative;
+
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3rem;
+
+  padding: 0.45rem 0.55rem 0.5rem;
+
+  border: 1px solid rgba(97, 214, 214, 0.32);
+  border-radius: 0.7rem;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(13, 31, 38, 0.82),
+      rgba(4, 14, 19, 0.94)
+    );
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    4px 4px 0 rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(207, 250, 254, 0.08),
+    inset 0 -1px 0 rgba(97, 214, 214, 0.06);
+
+  backdrop-filter: blur(12px);
+
+  isolation: isolate;
+}
+
+/* subtle glow behind dock */
+.desktop-dock-inner::after {
+  content: "";
+
+  position: absolute;
+  inset: 18% 6% -10%;
+
+  z-index: -1;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(97, 214, 214, 0.11),
+      transparent 70%
+    );
+
+  filter: blur(12px);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   DOCK APP
+   ========================================================= */
+
+.dock-app {
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 3.15rem;
+  height: 3.25rem;
+
+  flex: 0 0 auto;
+
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transform-origin: center bottom;
+  will-change: transform;
+
+  transition: none;
+}
+
+.dock-app:hover,
+.dock-app:focus-visible {
+  border-color: rgba(244, 184, 96, 0.18);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(244, 184, 96, 0.06),
+      rgba(97, 214, 214, 0.025)
+    );
+}
+
+.dock-app:focus-visible {
+  outline: 1px solid var(--os-amber);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   APP NAME TOOLTIP
+   ========================================================= */
+
+.dock-app::before {
+  content: attr(data-label);
+
+  position: absolute;
+
+  left: 50%;
+  bottom: calc(100% + 0.65rem);
+
+  z-index: 10;
+
+  transform:
+    translateX(-50%)
+    translateY(0.25rem);
+
+  padding: 0.32rem 0.48rem;
+
+  border: 1px solid rgba(97, 214, 214, 0.38);
+  border-radius: 0.25rem;
+
+  background: rgba(3, 13, 17, 0.96);
+
+  color: rgba(242, 227, 196, 0.9);
+
+  box-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.3);
+
+  font-size: 0.43rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.dock-app:hover::before,
+.dock-app:focus-visible::before {
+  opacity: 1;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+
+/* =========================================================
+   RUNNING INDICATOR
+   ========================================================= */
+
+.dock-running-indicator {
+  position: absolute;
+
+  left: 50%;
+  bottom: 0.08rem;
+
+  width: 0.27rem;
+  height: 0.27rem;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: var(--os-signal);
+
+  box-shadow:
+    0 0 7px rgba(97, 214, 214, 0.8);
+
+  opacity: 0;
+}
+
+.dock-app[data-running="true"]
+  .dock-running-indicator {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 639px) {
+  .desktop-dock {
+    bottom: 4.2rem;
+
+    width: calc(100% - 1rem);
+  }
+
+  .desktop-dock-inner {
+    justify-content: center;
+
+    gap: 0.08rem;
+
+    padding: 0.35rem 0.3rem;
+  }
+
+  .dock-app {
+    width: 2.6rem;
+    height: 2.8rem;
+  }
+
+  .dock-app::before {
+    display: none;
+  }
+}
 @media (min-width: 640px) and (max-width: 900px) {
   .desktop-item-status {
     top: 15rem !important;
