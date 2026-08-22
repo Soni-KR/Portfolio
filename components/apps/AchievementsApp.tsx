@@ -52,6 +52,9 @@ export function AchievementsApp() {
                 </div>
                 <h5>{certification.title}</h5>
                 <p>{certification.issuer}</p>
+                <a href={certification.evidenceUrl} target="_blank" rel="noreferrer">
+                  View certificate ↗
+                </a>
               </div>
             ))}
           </div>

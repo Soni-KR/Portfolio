@@ -5,6 +5,13 @@ export type ProjectFolderId =
   | "competitions-kaggle"
   | "research-linked";
 
+export type ProjectResource = {
+  label: string;
+  url: string;
+  kind: "notebook" | "certificate" | "profile";
+  download?: boolean;
+};
+
 export type PortfolioProject = {
   id: string;
   name: string;
@@ -14,7 +21,9 @@ export type PortfolioProject = {
   summary: string;
   technologies: string[];
   built: string[];
+  rank?: string;
   result?: string;
+  resources?: ProjectResource[];
   repositoryUrl?: string;
   publicationUrl?: string;
   researchId?: string;
@@ -45,6 +54,13 @@ export const projects: PortfolioProject[] = [
       "D-MODE: a research architecture combining DINOv2, RT-DETR, and a mask-prediction head.",
     ],
     repositoryUrl: "https://github.com/Soni-KR/pcdent",
+    resources: [
+      {
+        label: "Read project story",
+        url: "https://www.linkedin.com/posts/mourad-kraiem-99a0952a1_pcd-activity-7468410905576542208-TkpY",
+        kind: "profile",
+      },
+    ],
     researchId: "d-mode",
   },
   {
@@ -183,14 +199,16 @@ export const projects: PortfolioProject[] = [
     name: "AI GOAT 1.0",
     folder: "competitions-kaggle",
     kind: "Winning competition solution",
-    domains: ["Computer Vision", "Deep Learning"],
+    domains: ["Computer Vision", "Hyperspectral Imaging", "Deep Learning"],
     summary:
-      "A monocular dense-depth prediction solution developed during the AI GOAT 1.0 competition.",
+      "A dual computer-vision competition build spanning hyperspectral reconstruction and monocular dense-depth prediction.",
     technologies: ["Deep Learning", "Computer Vision", "ONNX", "FastAPI", "React"],
     built: [
-      "Preprocessing, model inference, evaluation, and an interactive application.",
-      "A complete solution for monocular depth estimation from a single RGB image.",
+      "A 29-channel hyperspectral-image reconstruction pipeline for the CASSI inverse problem.",
+      "Monocular dense-depth prediction from a single RGB image, evaluated under an efficiency-oriented ONNX deployment constraint.",
+      "A Top 5 pitch that moved the team from third on the leaderboard to second overall.",
     ],
+    rank: "2nd",
     result: "2nd Place - AI GOAT 1.0, Machine Learning Sup'Com.",
     repositoryUrl:
       "https://github.com/Soni-KR/AIGOAT1.0-Task2-Monocular-Depth-Estimation-from-Single-RGB-Images-solution",
@@ -212,35 +230,201 @@ export const projects: PortfolioProject[] = [
       "https://github.com/Soni-KR/starter-preprocessing-notebook-ieee-cis-2025",
   },
   {
-    id: "winning-notebooks",
-    name: "Other Winning Notebooks",
+    id: "kepler-exoplanet-orbyx",
+    name: "Kepler Exoplanet Discovery ML Challenge / ORBYX",
     folder: "competitions-kaggle",
-    kind: "Competition notebook archive",
-    domains: ["Tabular ML", "Feature Engineering", "Astronomy"],
+    kind: "Winning competition notebook",
+    domains: ["Astronomy", "Classification", "Tabular ML"],
     summary:
-      "Selected notebook work from winning DataLeaders 1.0 and ORBYX ML Challenge entries.",
-    technologies: ["CatBoost", "Scikit-learn", "Pandas", "Jupyter"],
+      "A machine-learning notebook for identifying exoplanet candidates from Kepler observations, built for the first ORBYX ML Challenge.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
     built: [
-      "A DataLeaders 1.0 voting-behavior solution using CatBoost and engineered demographic features.",
-      "A Kepler exoplanet-discovery notebook prepared for the ORBYX ML Challenge.",
+      "A reproducible data-preparation, modeling, evaluation, and prediction workflow.",
+      "The winning entry developed with Amine Fathallah for the inaugural ORBYX challenge.",
     ],
-    result:
-      "1st Place - DataLeaders 1.0; 1st Place - ORBYX ML Challenge.",
+    rank: "1 / 7",
+    result: "1st of 7 teams - ORBYX ML Challenge.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/kepler-exoplanet-orbyx.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
   },
   {
-    id: "kaggle-competition-work",
-    name: "Other Kaggle & Competition Work",
+    id: "global-temperature-forecasting",
+    name: "Global Temperature Forecasting (1961–2030)",
     folder: "competitions-kaggle",
-    kind: "Notebook collection",
-    domains: ["Kaggle", "Tabular ML", "Forecasting", "NLP"],
+    kind: "Winning forecasting notebook",
+    domains: ["Time Series", "Climate Data", "Forecasting"],
     summary:
-      "A broader notebook collection covering real-estate pricing in Tunisia, temperature forecasting, course-rating prediction, bank churn, DataQuest 2025, and mental-health classification.",
-    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter", "Kaggle"],
+      "A notebook-driven forecasting workflow for modeling global temperature behavior across historical and future periods.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
     built: [
-      "Exploratory analysis, preprocessing, modeling, evaluation, and submission workflows across varied datasets.",
-      "GO DATA SCIENCE 4.0 mental-health challenge entry certified 22nd of 120 competitors.",
+      "Exploratory analysis and preprocessing for long-horizon temperature data.",
+      "A complete training, validation, forecasting, and submission workflow.",
     ],
-    result: "GO DATA SCIENCE 4.0: top 25% - rank 22/120.",
+    rank: "1 / 8",
+    result: "1st of 8 competitors.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/global-temperature-forecasting.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "real-estate-price-tunisia",
+    name: "Real Estate Price Prediction in Tunisia",
+    folder: "competitions-kaggle",
+    kind: "Winning regression notebook",
+    domains: ["Regression", "Tunisia", "Tabular ML"],
+    summary:
+      "A Tunisia-focused regression workflow for predicting real-estate prices from structured property data.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
+    built: [
+      "Data inspection, cleaning, feature preparation, and regression experiments.",
+      "An evaluated prediction and submission pipeline retained as a reproducible notebook.",
+    ],
+    rank: "1 / 15",
+    result: "1st of 15 competitors.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/real-estate-price-tunisia.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "democracy-in-data",
+    name: "Democracy in Data: Predict Voting Behavior",
+    folder: "competitions-kaggle",
+    kind: "Competition notebook",
+    domains: ["CatBoost", "Feature Engineering", "Classification"],
+    summary:
+      "A voting-behavior classification solution developed for DataLeaders 1.0 using demographic signals and engineered features.",
+    technologies: ["CatBoost", "Python", "Pandas", "Jupyter"],
+    built: [
+      "A reproducible preprocessing and demographic feature-engineering pipeline.",
+      "CatBoost training, evaluation, and competition submission generation.",
+    ],
+    rank: "2 / 24",
+    result: "2nd of 24 competitors - notebook score 0.88397.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/democracy-in-data-voting.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "bank-churn-classification",
+    name: "Binary Classification with a Bank Churn Dataset #1",
+    folder: "competitions-kaggle",
+    kind: "Competition notebook",
+    domains: ["Classification", "Customer Analytics", "Tabular ML"],
+    summary:
+      "A binary-classification notebook for predicting customer churn from structured banking data.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
+    built: [
+      "A complete exploration, preprocessing, model-comparison, and validation workflow.",
+      "Prediction and submission steps preserved in an inspectable notebook.",
+    ],
+    rank: "3 / 32",
+    result: "3rd of 32 competitors.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/bank-churn-classification.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "datacamp-rating-prediction",
+    name: "DataCamp Courses Rating Prediction",
+    folder: "competitions-kaggle",
+    kind: "Competition notebook",
+    domains: ["Regression", "Education Data", "Tabular ML"],
+    summary:
+      "A notebook workflow for predicting course ratings from structured DataCamp course information.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
+    built: [
+      "Exploratory analysis and feature preparation around course metadata.",
+      "Model training, comparison, evaluation, and prediction generation.",
+    ],
+    rank: "5 / 11",
+    result: "5th of 11 competitors.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/datacamp-courses-rating.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "dataquest-2025-sboui",
+    name: "DataQuest 2025: Sboui Special Challenge",
+    folder: "competitions-kaggle",
+    kind: "Competition notebook",
+    domains: ["Data Science", "Modeling", "Kaggle"],
+    summary:
+      "A compact competition notebook created for the DataQuest 2025 Sboui Special Challenge.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter"],
+    built: [
+      "A focused end-to-end workflow from input data to evaluated predictions.",
+      "A submission-ready notebook retained as part of the competition archive.",
+    ],
+    rank: "9 / 26",
+    result: "9th of 26 competitors.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/dataquest-2025-sboui.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+    ],
+  },
+  {
+    id: "go-data-science-4",
+    name: "Go Data Science 4.0",
+    folder: "competitions-kaggle",
+    kind: "Mental-health ML challenge",
+    domains: ["Mental Health", "Classification", "Zindi"],
+    summary:
+      "A mental-health classification challenge entry completed as Team PowerPointPoys.",
+    technologies: ["Python", "Pandas", "Scikit-learn", "Jupyter", "Zindi"],
+    built: [
+      "A notebook covering data exploration, preprocessing, modeling, and prediction generation.",
+      "A competition submission that finished inside the certified top 25 percent.",
+    ],
+    rank: "22 / 120",
+    result: "22nd of 120 competitors - certified top 25%.",
+    resources: [
+      {
+        label: "Download notebook",
+        url: "/evidence/notebooks/go-data-science-4.ipynb",
+        kind: "notebook",
+        download: true,
+      },
+      {
+        label: "View rank certificate",
+        url: "/evidence/certificates/go-data-science-4-zindi.png",
+        kind: "certificate",
+      },
+    ],
   },
   {
     id: "multi-agent-news-prediction",
@@ -277,7 +461,9 @@ export const projectFolders: ReadonlyArray<{
 ];
 
 export function getProjectsForFolder(folderId: string) {
-  return projects.filter((project) => project.folder === folderId);
+  return projects
+    .filter((project) => project.folder === folderId)
+    .sort((first, second) => Number(Boolean(second.rank)) - Number(Boolean(first.rank)));
 }
 
 export function getFolderForProject(project: PortfolioProject) {

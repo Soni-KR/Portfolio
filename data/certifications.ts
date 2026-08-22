@@ -4,6 +4,7 @@ export type Certification = {
   issuer: string;
   issued: string;
   category: "AI & ML" | "Data Engineering" | "Software Delivery" | "Participation";
+  evidenceUrl: string;
 };
 
 export const certifications: Certification[] = [
@@ -13,6 +14,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jul 2026",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/graph-rag-langchain-neo4j.pdf",
   },
   {
     id: "deploying-ai-fastapi",
@@ -20,6 +22,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jul 2026",
     category: "Software Delivery",
+    evidenceUrl: "/evidence/certificates/deploying-ai-fastapi.pdf",
   },
   {
     id: "git-fundamentals",
@@ -27,6 +30,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jul 2026",
     category: "Software Delivery",
+    evidenceUrl: "/evidence/certificates/git-fundamentals.pdf",
   },
   {
     id: "apache-kafka",
@@ -34,6 +38,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jun 2026",
     category: "Data Engineering",
+    evidenceUrl: "/evidence/certificates/introduction-apache-kafka.pdf",
   },
   {
     id: "deep-learning-images-pytorch",
@@ -41,6 +46,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Feb 2026",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/deep-learning-images-pytorch.pdf",
   },
   {
     id: "transformer-models-pytorch",
@@ -48,6 +54,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Feb 2026",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/transformer-models-pytorch.pdf",
   },
   {
     id: "introduction-docker",
@@ -55,6 +62,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jan 2026",
     category: "Software Delivery",
+    evidenceUrl: "/evidence/certificates/introduction-docker.pdf",
   },
   {
     id: "cloud-computing",
@@ -62,6 +70,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Dec 2025",
     category: "Software Delivery",
+    evidenceUrl: "/evidence/certificates/understanding-cloud-computing.pdf",
   },
   {
     id: "preprocessing-ml-python",
@@ -69,6 +78,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Nov 2025",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/preprocessing-machine-learning-python.pdf",
   },
   {
     id: "introduction-git",
@@ -76,6 +86,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Nov 2025",
     category: "Software Delivery",
+    evidenceUrl: "/evidence/certificates/introduction-git.pdf",
   },
   {
     id: "llm-concepts",
@@ -83,6 +94,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Aug 2025",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/llm-concepts.pdf",
   },
   {
     id: "introduction-ai-agents",
@@ -90,6 +102,7 @@ export const certifications: Certification[] = [
     issuer: "DataCamp",
     issued: "Jul 2025",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/introduction-ai-agents.pdf",
   },
   {
     id: "nvidia-deep-learning",
@@ -97,6 +110,7 @@ export const certifications: Certification[] = [
     issuer: "NVIDIA",
     issued: "Feb 2025",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/nvidia-fundamentals-deep-learning.pdf",
   },
   {
     id: "supervised-machine-learning",
@@ -104,6 +118,7 @@ export const certifications: Certification[] = [
     issuer: "DeepLearning.AI & Stanford University / Coursera",
     issued: "Jan 2025",
     category: "AI & ML",
+    evidenceUrl: "/evidence/certificates/supervised-machine-learning.pdf",
   },
   {
     id: "esyp-participation",
@@ -111,6 +126,7 @@ export const certifications: Certification[] = [
     issuer: "IEEE ENSI IAS Chapter",
     issued: "Nov 2024",
     category: "Participation",
+    evidenceUrl: "/evidence/certificates/esyp-internal-competition.pdf",
   },
   {
     id: "ieeextreme-18-participation",
@@ -118,6 +134,7 @@ export const certifications: Certification[] = [
     issuer: "IEEE",
     issued: "Oct 2024",
     category: "Participation",
+    evidenceUrl: "/evidence/certificates/ieeextreme-18-participation.pdf",
   },
 ];
 

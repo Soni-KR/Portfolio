@@ -32,6 +32,12 @@ function ProjectDetail({
         <h3 className="mt-4 text-xl font-black leading-tight text-cyan-50 sm:text-2xl">
           {project.name}
         </h3>
+        {project.rank && (
+          <div className="project-rank-panel" aria-label={`Leaderboard rank ${project.rank}`}>
+            <span>Leaderboard rank</span>
+            <strong>{project.rank}</strong>
+          </div>
+        )}
         <p className="mt-3 max-w-2xl text-sm leading-6 text-cyan-50/60">
           {project.summary}
         </p>
@@ -68,6 +74,18 @@ function ProjectDetail({
       </section>
 
       <footer className="mt-6 flex flex-wrap gap-3 border-t border-cyan-300/15 pt-5">
+        {project.resources?.map((resource) => (
+          <a
+            key={`${project.id}-${resource.url}`}
+            className="os-button px-4 py-2 text-xs"
+            href={resource.url}
+            target="_blank"
+            rel="noreferrer"
+            download={resource.download || undefined}
+          >
+            {resource.label} {resource.download ? "↓" : "↗"}
+          </a>
+        ))}
         {project.repositoryUrl && (
           <a className="os-button px-4 py-2 text-xs" href={project.repositoryUrl} target="_blank" rel="noreferrer">
             Open GitHub ↗
@@ -87,7 +105,7 @@ function ProjectDetail({
             Open in Research Archive ↗
           </button>
         )}
-        {!project.repositoryUrl && !project.publicationUrl && !project.researchId && (
+        {!project.resources?.length && !project.repositoryUrl && !project.publicationUrl && !project.researchId && (
           <p className="text-xs uppercase tracking-[0.14em] text-cyan-100/35">
             Portfolio record // public links not listed
           </p>
@@ -107,6 +125,9 @@ export function ProjectsApp({ initialProjectId, onOpenResearch }: ProjectsAppPro
     projects.find((project) => project.id === initialProjectId) ?? projects[0];
   const [folderId, setFolderId] = useState<string>(() => getFolderForProject(initialProject));
   const folderProjects = useMemo(() => getProjectsForFolder(folderId), [folderId]);
+  const rankedNotebookCount = folderProjects.filter(
+    (project) => project.rank && project.resources?.some((resource) => resource.kind === "notebook"),
+  ).length;
   const [selectedProjectId, setSelectedProjectId] = useState(initialProject.id);
   const selectedProject =
     folderProjects.find((project) => project.id === selectedProjectId) ?? folderProjects[0];
@@ -152,7 +173,14 @@ export function ProjectsApp({ initialProjectId, onOpenResearch }: ProjectsAppPro
               {projectFolders.find((folder) => folder.id === folderId)?.label}
             </h3>
           </div>
-          <span className="text-[0.6rem] text-cyan-100/35">{folderProjects.length} files</span>
+          <div className="text-right text-[0.6rem] text-cyan-100/35">
+            <span className="block">{folderProjects.length} files</span>
+            {rankedNotebookCount > 0 && (
+              <span className="mt-1 block text-lime-300/60">
+                {rankedNotebookCount} ranked notebooks
+              </span>
+            )}
+          </div>
         </div>
         <div className="mt-3 space-y-1">
           {folderProjects.map((project) => (
@@ -164,12 +192,13 @@ export function ProjectsApp({ initialProjectId, onOpenResearch }: ProjectsAppPro
               aria-pressed={selectedProject?.id === project.id}
             >
               <span className="project-file-icon" aria-hidden="true">P</span>
-              <span className="min-w-0">
+              <span className="min-w-0 flex-1">
                 <span className="block text-left font-semibold leading-5 text-cyan-50">{project.name}</span>
                 <span className="mt-0.5 block truncate text-left text-[0.58rem] uppercase tracking-[0.1em] text-cyan-100/35">
                   {project.kind}
                 </span>
               </span>
+              {project.rank && <span className="project-rank-badge">{project.rank}</span>}
             </button>
           ))}
         </div>

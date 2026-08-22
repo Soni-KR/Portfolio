@@ -23,6 +23,7 @@ type TerminalLine = {
 type TerminalAppProps = {
   onOpenApp: (appId: AppId) => void;
   onResetDesktop: () => void;
+  onActivateOverdrive: () => void;
 };
 
 const initialLines: TerminalLine[] = [
@@ -57,7 +58,7 @@ const commandHelp = [
   "clear                erase terminal history",
 ];
 
-export function TerminalApp({ onOpenApp, onResetDesktop }: TerminalAppProps) {
+export function TerminalApp({ onOpenApp, onResetDesktop, onActivateOverdrive }: TerminalAppProps) {
   const inputId = useId();
   const [lines, setLines] = useState<TerminalLine[]>(initialLines);
   const [input, setInput] = useState("");
@@ -238,6 +239,14 @@ export function TerminalApp({ onOpenApp, onResetDesktop }: TerminalAppProps) {
 
       case "stand":
         output = [{ kind: "output", text: "Stand process invisible. System effect: dramatic confidence +100." }];
+        break;
+
+      case "overdrive":
+        onActivateOverdrive();
+        output = [
+          { kind: "output", text: "Hidden protocol accepted." },
+          { kind: "output", text: "OVERDRIVE MODE // +1 CONTINUE" },
+        ];
         break;
 
       case "peni":

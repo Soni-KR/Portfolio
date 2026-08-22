@@ -14,7 +14,7 @@ export const achievements: Achievement[] = [
     title: "2nd Place - AI GOAT 1.0",
     category: "Machine Learning Sup'Com",
     detail:
-      "Built deep-learning pipelines for monocular dense-depth prediction, including preprocessing, inference, evaluation, and an interactive application.",
+      "Solved hyperspectral CASSI reconstruction and monocular depth-estimation tasks, then moved from third on the leaderboard to second after the Top 5 pitch.",
     metric: "2nd place",
     url: "https://github.com/Soni-KR/AIGOAT1.0-Task2-Monocular-Depth-Estimation-from-Single-RGB-Images-solution",
     prominence: "primary",
@@ -26,6 +26,7 @@ export const achievements: Achievement[] = [
     detail:
       "Won the machine-learning challenge with a two-person team; the retained notebook covers Kepler exoplanet discovery.",
     metric: "1st place",
+    url: "/evidence/notebooks/kepler-exoplanet-orbyx.ipynb",
     prominence: "primary",
   },
   {
@@ -43,8 +44,9 @@ export const achievements: Achievement[] = [
     title: "1st Place - DataLeaders 1.0",
     category: "IEEE ENSI Student Branch",
     detail:
-      "Developed a CatBoost voting-behavior solution using demographic feature engineering and a reproducible notebook workflow.",
-    metric: "1st place // notebook score 0.88397",
+      "Earned the competition's first-place award after placing 2nd of 24 on the notebook leaderboard with a CatBoost voting-behavior solution.",
+    metric: "1st place // leaderboard 2 of 24",
+    url: "/evidence/notebooks/democracy-in-data-voting.ipynb",
     prominence: "primary",
   },
   {
@@ -52,7 +54,7 @@ export const achievements: Achievement[] = [
     title: "1st Place - SYP 7.0",
     category: "IEEE ENSI Student Branch",
     detail:
-      "Awarded first place in the seventh edition of the IEEE ENSI Student Branch SYP competition.",
+      "Won with PowerPuffPoys for stART, an AI- and VR-assisted concept designed to strengthen artist-community connections.",
     metric: "1st place",
     prominence: "primary",
   },
@@ -119,6 +121,7 @@ export const achievements: Achievement[] = [
     detail:
       "Competed as Team PowerPointPoys in the mental-health classification challenge.",
     metric: "Top 25% // rank 22 of 120",
+    url: "/evidence/certificates/go-data-science-4-zindi.png",
     prominence: "secondary",
   },
   {
@@ -127,6 +130,7 @@ export const achievements: Achievement[] = [
     category: "Programming Competition",
     detail:
       "Participated with team UwU in the global IEEE programming competition hosted for more than 19,000 participants.",
+    url: "/evidence/certificates/ieeextreme-18-participation.pdf",
     prominence: "secondary",
   },
 ];

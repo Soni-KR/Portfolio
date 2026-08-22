@@ -12,6 +12,7 @@ Visitors enter through a short boot sequence and arrive at a desktop where portf
 - Draggable desktop icons and status widget with versioned local persistence
 - Project Drive organized into Featured, AI & Software, Federated & Distributed AI, Competitions & Kaggle, and Research-linked folders
 - Four-record Research Archive plus resume, profile, awards, verified certifications, contact, and terminal apps
+- Ranked competition records with curated notebook downloads and certificate verification links
 - `Ctrl/Cmd + K` command palette with keyboard navigation and record-level search
 - Optional synthesized system sounds, muted by default
 - Responsive mobile window mode and reduced-motion support
@@ -71,7 +72,7 @@ components/
   os/                 Desktop, windows, taskbar, launcher, wallpaper, and OS state
 
 data/                 Canonical portfolio content
-public/               Optimized wallpaper, avatar poses, social card, and resume PDF
+public/               Optimized visuals, resume, and curated public evidence files
 ```
 
 ## Architecture
@@ -93,7 +94,7 @@ Portfolio records live in `data/`, allowing content updates without changing win
 - Research records: `data/research.ts`
 - Skills: `data/skills.ts`
 - Achievements: `data/achievements.ts`
-- Hidden future certifications: `data/certifications.ts`
+- Certifications and evidence links: `data/certifications.ts`
 
 Resume updates should replace `public/resume.pdf` while keeping the same filename unless `ResumeApp.tsx` is updated too.
 
@@ -104,13 +105,19 @@ Resume updates should replace `public/resume.pdf` while keeping the same filenam
 - Window behavior: `components/os/windowReducer.ts` and `components/os/Window.tsx`
 - Animated, interactive wallpaper and mascot behavior: `components/os/WorkspaceWallpaper.tsx`
 - Identity-based avatar poses: `public/avatar/`
-- Cohesive illustrated room backdrop: `public/wallpaper/oskr-interactive-room.webp`
+- Cohesive illustrated room backdrop: `public/wallpaper/oskr-interests-room-v2.webp`
 - Wallpaper, mascot, cursor, and responsive styling: `app/globals.css`
 - Terminal commands and easter eggs: `components/apps/TerminalApp.tsx`
 
 The room is an interactive navigation layer. The investigation board opens Research; the server and medal stack opens Achievements; the notebook opens Resume; the central laptop opens Projects; the small screen opens Terminal; the radio opens Contact; and Mourad opens About. The window changes the time of day, while the power control dims or restores the room. Fine pointers also drive subtle scene parallax and a moving ambient light.
 
 The mascot uses three optimized transparent WebP poses derived from Mourad's portrait. Idle, working, and excited states switch instantly and total roughly 65 KB.
+
+The desktop also contains an eight-second OVERDRIVE MODE easter egg. It can be activated with the classic Konami sequence or the hidden `overdrive` terminal command. The effect respects the global reduced-motion preference.
+
+## Evidence files
+
+`pc switch/` is the private source archive and is intentionally ignored by Git. Only selected, portfolio-ready copies are published under `public/evidence/` with stable URL-safe names. Project records link to downloadable notebooks, while certification records link to their corresponding PDF or image evidence.
 
 ## Environment
 

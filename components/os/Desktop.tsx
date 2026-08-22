@@ -49,6 +49,19 @@ const companionMessages: Partial<Record<AppId, string>> = {
   achievements: "Records verified.",
 };
 
+const konamiSequence = [
+  "arrowup",
+  "arrowup",
+  "arrowdown",
+  "arrowdown",
+  "arrowleft",
+  "arrowright",
+  "arrowleft",
+  "arrowright",
+  "b",
+  "a",
+];
+
 export function Desktop() {
   const [windows, dispatch] = useReducer(windowReducer, []);
   const [layout, setLayout] = useState(() => getDefaultDesktopLayout());
@@ -58,11 +71,29 @@ export function Desktop() {
   const [appTargets, setAppTargets] = useState<Partial<Record<AppId, string>>>({});
   const [companionMood, setCompanionMood] = useState<"idle" | "working" | "excited">("idle");
   const [companionMessage, setCompanionMessage] = useState<string | null>(null);
+  const [overdriveActive, setOverdriveActive] = useState(false);
   const nextZIndex = useRef(1);
   const companionTimer = useRef<number | null>(null);
+  const overdriveTimer = useRef<number | null>(null);
+  const konamiProgress = useRef(0);
   const playSound = useSystemSound(layout.soundEnabled);
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
+
+  const activateOverdrive = useCallback(() => {
+    if (overdriveTimer.current !== null) window.clearTimeout(overdriveTimer.current);
+    if (companionTimer.current !== null) window.clearTimeout(companionTimer.current);
+    setOverdriveActive(true);
+    setCompanionMood("excited");
+    setCompanionMessage("OVERDRIVE MODE // +1 CONTINUE");
+    playSound("reset");
+
+    overdriveTimer.current = window.setTimeout(() => {
+      setOverdriveActive(false);
+      setCompanionMood("idle");
+      setCompanionMessage(null);
+    }, 8000);
+  }, [playSound]);
 
   const takeNextZIndex = () => {
     const zIndex = nextZIndex.current;
@@ -108,6 +139,34 @@ export function Desktop() {
     window.addEventListener("keydown", handleGlobalKeys);
     return () => window.removeEventListener("keydown", handleGlobalKeys);
   }, []);
+
+  useEffect(() => {
+    const listenForOverdriveCode = (event: KeyboardEvent) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.matches("input, textarea") || target.isContentEditable)
+      ) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+      const expectedKey = konamiSequence[konamiProgress.current];
+      if (key === expectedKey) {
+        konamiProgress.current += 1;
+      } else {
+        konamiProgress.current = key === konamiSequence[0] ? 1 : 0;
+      }
+
+      if (konamiProgress.current === konamiSequence.length) {
+        konamiProgress.current = 0;
+        activateOverdrive();
+      }
+    };
+
+    window.addEventListener("keydown", listenForOverdriveCode);
+    return () => window.removeEventListener("keydown", listenForOverdriveCode);
+  }, [activateOverdrive]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -156,6 +215,7 @@ export function Desktop() {
   useEffect(() => {
     return () => {
       if (companionTimer.current !== null) window.clearTimeout(companionTimer.current);
+      if (overdriveTimer.current !== null) window.clearTimeout(overdriveTimer.current);
     };
   }, []);
 
@@ -280,7 +340,7 @@ export function Desktop() {
   const primaryApps = desktopApps.filter((app) => app.showOnDesktop);
 
   return (
-    <main className="os-screen desktop-shell text-cyan-50">
+    <main className={`os-screen desktop-shell text-cyan-50 ${overdriveActive ? "os-overdrive" : ""}`}>
       <div className="desktop-grid" aria-hidden="true" />
       <div className="wallpaper-orbit wallpaper-orbit-one" aria-hidden="true" />
       <div className="wallpaper-orbit wallpaper-orbit-two" aria-hidden="true" />
@@ -292,6 +352,13 @@ export function Desktop() {
       />
       <div className="crt-overlay" aria-hidden="true" />
       <p className="sr-only" aria-live="polite">{companionMessage}</p>
+      {overdriveActive && (
+        <div className="overdrive-toast" role="status" aria-live="polite">
+          <span>Secret protocol</span>
+          <strong>OVERDRIVE MODE</strong>
+          <small>+1 CONTINUE // 8 SEC BOOST</small>
+        </div>
+      )}
 
       <SystemBar
         soundEnabled={layout.soundEnabled}
@@ -352,6 +419,7 @@ export function Desktop() {
             targetId={appTargets[windowState.app.id]}
             onOpenApp={openAppById}
             onResetDesktop={resetDesktop}
+            onActivateOverdrive={activateOverdrive}
           />
         </Window>
       ))}

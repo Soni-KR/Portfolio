@@ -17,6 +17,7 @@ const TerminalApp = dynamic(() => import("@/components/apps/TerminalApp").then((
 type AppRuntime = {
   onOpenApp: (appId: AppId, targetId?: string) => void;
   onResetDesktop: () => void;
+  onActivateOverdrive: () => void;
 };
 
 type AppContentProps = AppRuntime & {
@@ -36,12 +37,16 @@ const appRenderers: Record<AppId, (runtime: AppRuntime, targetId?: string) => Re
     />
   ),
   research: (_, targetId) => <ResearchApp key={targetId ?? "research"} initialResearchId={targetId} />,
-  terminal: ({ onOpenApp, onResetDesktop }) => (
-    <TerminalApp onOpenApp={onOpenApp} onResetDesktop={onResetDesktop} />
+  terminal: ({ onOpenApp, onResetDesktop, onActivateOverdrive }) => (
+    <TerminalApp
+      onOpenApp={onOpenApp}
+      onResetDesktop={onResetDesktop}
+      onActivateOverdrive={onActivateOverdrive}
+    />
   ),
   resume: () => <ResumeApp />,
 };
 
-export function AppContent({ appId, targetId, onOpenApp, onResetDesktop }: AppContentProps) {
-  return appRenderers[appId]({ onOpenApp, onResetDesktop }, targetId);
+export function AppContent({ appId, targetId, onOpenApp, onResetDesktop, onActivateOverdrive }: AppContentProps) {
+  return appRenderers[appId]({ onOpenApp, onResetDesktop, onActivateOverdrive }, targetId);
 }
